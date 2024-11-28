@@ -13,11 +13,12 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.use(cookieParser());
+  
   app.use((req: Request, res: Response, next: NextFunction) => {
     next();
   });
 
-  app.use(cookieParser());
 
   await app.listen(process.env.PORT_SERVER);
   Logger.log(

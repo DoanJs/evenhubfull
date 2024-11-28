@@ -13,6 +13,7 @@ import {
   TextComponent,
 } from "../../components";
 import { appColor } from "../../constants/appColor";
+import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
 
 const initValue = {
@@ -31,6 +32,37 @@ const SignupScreen = () => {
     data[`${key}`] = value;
     setValues(data);
   };
+
+  const handleSignup = () => {
+    if (
+      values.username.trim() === "" ||
+      values.password.trim() === "" ||
+      values.email.trim() === ""
+    ) {
+      alert("Không được để trống !");
+      return;
+    }
+    if (values.password !== values.confirmPassword) {
+      alert("Xác thực mật khẩu không chính xác !");
+      return;
+    }
+    // thoa cac dk. bat dau goi api
+    AxiosAPI("post", "register", {
+      username: values.username,
+      password: values.password,
+      email: values.email,
+    })
+      .then((result: any) => {
+        navigation.navigate("LoginScreen");
+        console.log(
+          "Tài khoản " + result.data?.Username + " đăng ký thành công"
+        );
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
   return (
     <ContainerComponent isImageBackground isScroll back>
       <SectionComponent>
@@ -72,9 +104,13 @@ const SignupScreen = () => {
 
       <SpaceComponent height={16} />
       <SectionComponent styles={{ alignItems: "center" }}>
-        <ButtonComponent type="primary" text="SIGN UP" 
+        <ButtonComponent
+          type="primary"
+          text="SIGN UP"
           iconFlex="right"
-          icon={<Image source={arrownRight} height={20} />}/>
+          icon={<Image source={arrownRight} height={20} />}
+          onPress={handleSignup}
+        />
       </SectionComponent>
 
       <SocialLogin />

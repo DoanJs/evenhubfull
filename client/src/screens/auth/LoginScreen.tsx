@@ -1,6 +1,8 @@
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Lock, Sms } from "iconsax-react-native";
 import React, { useState } from "react";
-import { Image, Switch, Text } from "react-native";
+import { Image, Switch } from "react-native";
+import arrownRight from "../../assets/images/arrowRight.png";
 import TextLogo from "../../assets/images/text-logo.png";
 import {
   ButtonComponent,
@@ -12,10 +14,8 @@ import {
   TextComponent,
 } from "../../components";
 import { appColor } from "../../constants/appColor";
+import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import arrownRight from "../../assets/images/arrowRight.png";
-import { gql, useQuery } from "@apollo/client";
 // import { numberVar } from "../../graphqlClient/cache";
 
 const LoginScreen = () => {
@@ -24,33 +24,17 @@ const LoginScreen = () => {
   const [isRemember, setIsRemember] = useState(true);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   // const number = useReactiveVar(numberVar);
-  const { data: Data_users, error } = useQuery(
-    gql`
-      query {
-        users {
-          UserID
-          Username
-          Password
-        }
-      }
-    `
-  );
 
-  const { data: Data_events, error: errorEvent } = useQuery(
-    gql`
-      query {
-        events {
-          EventID
-          Name
-        }
-      }
-    `
-  );
-  
   const handleLogin = () => {
     // console.log(Data_users.users);
     // numberVar(number + 1);
-    console.log(Data_events)
+    AxiosAPI("post", "login", { username: email, password })
+      .then((result: any) => {
+        console.log(result)
+      })
+      .catch((err: any) => {
+        console.log(err.message);
+      });
   };
 
   return (

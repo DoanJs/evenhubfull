@@ -8,11 +8,15 @@ export class User {
   @Field()
   UserID: number;
 
-  @Column({ type: 'nvarchar', length: 100, nullable: true })
+  @Column({ type: 'nvarchar', length: 200, nullable: true })
   @Field({ nullable: true })
   Username: string;
 
-  @Column({ type: 'nvarchar', length: 100, nullable: true })
+  @Column({ type: 'nvarchar', length: 200, nullable: true })
+  @Field({ nullable: true })
+  Email: string;
+
+  @Column({ type: 'nvarchar', length: 500, nullable: true })
   @Field({ nullable: true })
   Password: string;
 

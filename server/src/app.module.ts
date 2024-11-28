@@ -1,11 +1,12 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { UsersModule } from './users';
+import { AuthModule } from './auth';
 import { EventModule } from './events/Event.module';
+import { UsersModule } from './users';
 require('dotenv').config();
 
 @Module({
@@ -16,10 +17,10 @@ require('dotenv').config();
       port: 1433,
       username: process.env.USERNAME_MSSQL,
       password: process.env.PASSWORD_MSSQL,
-      database: 'evenhubDB',
+      database: process.env.NAMEDB_MSSQL,
       autoLoadEntities: true,
       logging: true,
-      synchronize: true, ///not use production env
+      // synchronize: true, ///not use production env
       options: {
         trustServerCertificate: true,
       },
@@ -30,6 +31,7 @@ require('dotenv').config();
     }),
     UsersModule,
     EventModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
