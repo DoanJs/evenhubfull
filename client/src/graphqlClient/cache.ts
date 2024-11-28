@@ -9,5 +9,7 @@ import { InMemoryCache, ReactiveVar, makeVar } from "@apollo/client";
 //   Form: null,
 // });
 
+export const numberVar: ReactiveVar<number> = makeVar<number>(0)
+
 const cache = new InMemoryCache();
 export default cache;

@@ -1,6 +1,6 @@
 import { Lock, Sms } from "iconsax-react-native";
 import React, { useState } from "react";
-import { Image, Switch } from "react-native";
+import { Image, Switch, Text } from "react-native";
 import TextLogo from "../../assets/images/text-logo.png";
 import {
   ButtonComponent,
@@ -16,12 +16,14 @@ import { SocialLogin } from "./components";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import arrownRight from "../../assets/images/arrowRight.png";
 import { gql, useQuery } from "@apollo/client";
+// import { numberVar } from "../../graphqlClient/cache";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRemember, setIsRemember] = useState(true);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  // const number = useReactiveVar(numberVar);
   const { data: Data_users, error } = useQuery(
     gql`
       query {
@@ -31,13 +33,24 @@ const LoginScreen = () => {
           Password
         }
       }
-    `,
+    `
   );
 
-  console.log(Data_users)
-
+  const { data: Data_events, error: errorEvent } = useQuery(
+    gql`
+      query {
+        events {
+          EventID
+          Name
+        }
+      }
+    `
+  );
+  
   const handleLogin = () => {
-    console.log(Data_users.users);
+    // console.log(Data_users.users);
+    // numberVar(number + 1);
+    console.log(Data_events)
   };
 
   return (

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './users';
+import { EventModule } from './events/Event.module';
 require('dotenv').config();
 
 @Module({
@@ -28,6 +29,7 @@ require('dotenv').config();
       autoSchemaFile: true,
     }),
     UsersModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
