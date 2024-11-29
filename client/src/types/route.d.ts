@@ -6,6 +6,7 @@ type RootStackParamList = {
     ForgotPassword: undefined;
     Verification: undefined;
     HomeScreen: undefined;
+    MainScreen: undefined;
     // Profile: { userId: string };
     // Feed: { sort: 'latest' | 'top' } | undefined;
  };

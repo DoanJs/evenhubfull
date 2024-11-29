@@ -14,7 +14,7 @@ SplashSScreen.preventAutoHideAsync();
 const App = () => {
   const [isShowSplash, setIsShowSplash] = useState(true);
   const [accessToken, setAccessToken] = useState("");
-  const { getItem, setItem } = useAsyncStorage("assetToken");
+  const { getItem, setItem } = useAsyncStorage("accessToken");
 
   const [loaded, error] = useFonts({
     'AirbnbCereal_W_Bd': require('./assets/fonts/AirbnbCereal_W_Bd.otf'),

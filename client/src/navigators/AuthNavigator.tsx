@@ -7,6 +7,7 @@ import {
   SignupScreen,
   Verification,
 } from "../screens";
+import MainNavigator from "./MainNavigator";
 
 const AuthNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -21,6 +22,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
       <Stack.Screen name="Verification" component={Verification} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="MainScreen" component={MainNavigator} />
     </Stack.Navigator>
   );
 };

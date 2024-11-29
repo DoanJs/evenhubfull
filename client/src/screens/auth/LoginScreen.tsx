@@ -16,7 +16,8 @@ import {
 import { appColor } from "../../constants/appColor";
 import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
-import JWTManager from '../../utils/auth/jwt'
+import JWTManager from "../../utils/auth/jwt";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -24,13 +25,15 @@ const LoginScreen = () => {
   const [isRemember, setIsRemember] = useState(true);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   // const number = useReactiveVar(numberVar);
+  const { setItem } = useAsyncStorage("accessToken");
 
   const handleLogin = () => {
     AxiosAPI("post", "login", { username: email, password })
-      .then((result: any) => {
+      .then(async (result: any) => {
+        await setItem(result.data.access_token);
         JWTManager.setToken(result.data.access_token);
-        console.log(result.data.access_token)
-        // navigation.navigate('HomeScreen')
+        console.log(result.data.access_token);
+        navigation.navigate("MainScreen");
       })
       .catch((err: any) => {
         console.log(err.mesage);
