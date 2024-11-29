@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -7,7 +9,6 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth';
 import { EventModule } from './events/Event.module';
 import { UsersModule } from './users';
-require('dotenv').config();
 
 @Module({
   imports: [
@@ -29,9 +30,9 @@ require('dotenv').config();
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    AuthModule,
     UsersModule,
     EventModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

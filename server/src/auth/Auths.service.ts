@@ -6,6 +6,7 @@ import { User } from 'src/users';
 import { Repository } from 'typeorm';
 import { AccessTokenType } from './types/accessTokenType';
 import { Request, Response } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthsService {
@@ -29,7 +30,7 @@ export class AuthsService {
 
   async validateRegister(username: string, password: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { Username: username },
+      where: { Email: username },
     });
     if (user) {
       throw new UnauthorizedException('Tài khoản này đã tồn tại!');
@@ -38,8 +39,8 @@ export class AuthsService {
   }
 
   async login(req: Request, res: Response): Promise<AccessTokenType> {
-    console.log(req.user)
     const user = req.user as User;
+
     const payload = {
       UserID: user.UserID,
       Username: user.Username,
@@ -51,23 +52,23 @@ export class AuthsService {
       secret: process.env.SECRETOKEN as string,
     });
 
-    // const refresh_token = this.jwtService.sign(
-    //   {
-    //     ...payload,
-    //     Password: user.Password,
-    //   },
-    //   {
-    //     expiresIn: process.env.expiresInRefreshToken as string,
-    //     secret: process.env.SECREREFRESHTOKEN as string,
-    //   },
-    // );
+    const refresh_token = this.jwtService.sign(
+      {
+        ...payload,
+        Password: user.Password,
+      },
+      {
+        expiresIn: process.env.expiresInRefreshToken as string,
+        secret: process.env.SECREREFRESHTOKEN as string,
+      },
+    );
 
-    // res.cookie(process.env.REFRESHTOKENCOOKIENAME as string, refresh_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'lax',
-    //   path: '/refresh_token',
-    // });
+    res.cookie(process.env.REFRESHTOKENCOOKIENAME as string, refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/refresh_token',
+    });
 
     return {
       access_token,
@@ -87,69 +88,61 @@ export class AuthsService {
     return newAccount;
   }
 
-  //   async refresh_token(req: Request, res: Response): Promise<AccessTokenType> {
-  //     const refreshToken = req.cookies[process.env.REFRESHTOKENCOOKIENAME];
-  //     if (!refreshToken) {
-  //       throw new UnauthorizedException('refresh token not exist!');
-  //     }
+  async refresh_token(req: Request, res: Response): Promise<AccessTokenType> {
+    const refreshToken = req.cookies[process.env.REFRESHTOKENCOOKIENAME];
+    if (!refreshToken) {
+      throw new UnauthorizedException('refresh token not exist!');
+    }
 
-  //     try {
-  //       const decodeUser = this.jwtService.verify(refreshToken, {
-  //         secret: process.env.SECREREFRESHTOKEN as string,
-  //       }) as JwtPayload;
+    try {
+      const decodeUser = this.jwtService.verify(refreshToken, {
+        secret: process.env.SECREREFRESHTOKEN as string,
+      }) as JwtPayload;
 
-  //       const existingUser = await this.accountRepository.query(
-  //         SP_GET_DATA(
-  //           'Accounts',
-  //           `'Username = N''${decodeUser.Username}'''`,
-  //           'AccountID',
-  //           0,
-  //           0,
-  //         ),
-  //       );
-  //       if (!existingUser[0]) {
-  //         throw new UnauthorizedException('Account not exist in Database !');
-  //       }
+      const existingUser = await this.userRepository.query(
+        `select * from Users where Email = '${decodeUser.Email}'`,
+      );
+      if (!existingUser[0]) {
+        throw new UnauthorizedException('User not exist in Database !');
+      }
 
-  //       const payload = {
-  //         AccountID: existingUser[0].AccountID,
-  //         Username: existingUser[0].Username,
-  //         Role: existingUser[0].Role,
-  //         Position: existingUser[0].Position,
-  //       };
+      const payload = {
+        UserID: existingUser[0].UserID,
+        Username: existingUser[0].Username,
+        Email: existingUser[0].Email,
+      };
 
-  //       const refresh_token = this.jwtService.sign(
-  //         {
-  //           ...payload,
-  //           MaHistory: decodeUser.MaHistory,
-  //           Password: existingUser.Password,
-  //         },
-  //         {
-  //           expiresIn: process.env.expiresInRefreshToken as string,
-  //           secret: process.env.SECREREFRESHTOKEN as string,
-  //         },
-  //       );
+      const refresh_token = this.jwtService.sign(
+        {
+          ...payload,
+          Password: existingUser.Password,
+        },
+        {
+          expiresIn: process.env.expiresInRefreshToken as string,
+          secret: process.env.SECREREFRESHTOKEN as string,
+        },
+      );
 
-  //       res.cookie(process.env.REFRESHTOKENCOOKIENAME as string, refresh_token, {
-  //         httpOnly: true,
-  //         secure: true,
-  //         sameSite: 'lax',
-  //         path: '/refresh_token',
-  //       });
+      res.cookie(process.env.REFRESHTOKENCOOKIENAME as string, refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        path: '/refresh_token',
+      });
 
-  //       return {
-  //         access_token: this.jwtService.sign(
-  //           { ...payload, MaHistory: decodeUser.MaHistory },
-  //           {
-  //             expiresIn: process.env.expiresInToken as string,
-  //             secret: process.env.SECRETOKEN as string,
-  //           },
-  //         ),
-  //       };
-  //     } catch (error) {
-  //       throw new UnauthorizedException('Refresh token not valid!');
-  //     }
-  //   }
+      return {
+        access_token: this.jwtService.sign(
+          { ...payload, MaHistory: decodeUser.MaHistory },
+          {
+            expiresIn: process.env.expiresInToken as string,
+            secret: process.env.SECRETOKEN as string,
+          },
+        ),
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Refresh token not valid!');
+    }
+  }
 
   //   async logout(req: any, res: Response): Promise<boolean> {
   //     res.clearCookie(process.env.REFRESHTOKENCOOKIENAME, {

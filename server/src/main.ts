@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { NextFunction } from 'express';
-require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,11 +13,10 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
-  
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     next();
   });
-
 
   await app.listen(process.env.PORT_SERVER);
   Logger.log(
