@@ -16,7 +16,7 @@ import {
 import { appColor } from "../../constants/appColor";
 import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
-// import { numberVar } from "../../graphqlClient/cache";
+import JWTManager from '../../utils/auth/jwt'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -26,14 +26,14 @@ const LoginScreen = () => {
   // const number = useReactiveVar(numberVar);
 
   const handleLogin = () => {
-    // console.log(Data_users.users);
-    // numberVar(number + 1);
     AxiosAPI("post", "login", { username: email, password })
       .then((result: any) => {
-        console.log(result)
+        JWTManager.setToken(result.data.access_token);
+        console.log(result.data.access_token)
+        // navigation.navigate('HomeScreen')
       })
       .catch((err: any) => {
-        console.log(err.message);
+        console.log(err.mesage);
       });
   };
 

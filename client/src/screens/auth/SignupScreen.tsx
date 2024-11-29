@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Lock, Sms, User } from "iconsax-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image } from "react-native";
 import arrownRight from "../../assets/images/arrowRight.png";
 import {
@@ -15,6 +15,7 @@ import {
 import { appColor } from "../../constants/appColor";
 import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
+import { gql, useQuery } from "@apollo/client";
 
 const initValue = {
   username: "",
@@ -26,6 +27,21 @@ const initValue = {
 const SignupScreen = () => {
   const [values, setValues] = useState(initValue);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+
+  const { data: Data_events, error } = useQuery(
+    gql`
+      query {
+        events {
+          EventID
+          Name
+        }
+      }
+    `
+  );
+
+  useEffect(() => {
+    console.log(Data_events);
+  }, [Data_events]);
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = { ...values };
