@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
 import onbroading_1 from "../../assets/images/onboarding-1.png";
@@ -15,6 +15,7 @@ const OnbroadingScreen = () => {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const [index, setIndex] = useState(0);
 
+  
   return (
     <View style={[globalStyles.container]}>
       <Swiper

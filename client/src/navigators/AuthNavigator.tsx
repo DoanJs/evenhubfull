@@ -9,8 +9,21 @@ import {
 } from "../screens";
 import MainNavigator from "./MainNavigator";
 
+const Stack = createNativeStackNavigator();
 const AuthNavigator = () => {
-  const Stack = createNativeStackNavigator();
+  // const user = useReactiveVar(userVar)
+
+  // const [isExistingUser, setIsExistingUser] = useState(false);
+
+  // useEffect(() => {
+  //   checkUserExisting()
+  // }, [])
+
+  // const checkUserExisting = async () => {
+  //   const res = await AsyncStorage.getItem("auth");
+  //   res && setIsExistingUser(true);
+  // };
+
   return (
     <Stack.Navigator
       screenOptions={{

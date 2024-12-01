@@ -72,6 +72,7 @@ export class AuthsService {
 
     return {
       access_token,
+      user: { Username: user.Username, Email: user.Email },
     };
   }
 
@@ -131,13 +132,14 @@ export class AuthsService {
       });
 
       return {
-        access_token: this.jwtService.sign(
-          { ...payload, MaHistory: decodeUser.MaHistory },
-          {
-            expiresIn: process.env.expiresInToken as string,
-            secret: process.env.SECRETOKEN as string,
-          },
-        ),
+        access_token: this.jwtService.sign(payload, {
+          expiresIn: process.env.expiresInToken as string,
+          secret: process.env.SECRETOKEN as string,
+        }),
+        user: {
+          Username: existingUser[0].Username,
+          Email: existingUser[0].Email,
+        },
       };
     } catch (error) {
       throw new UnauthorizedException('Refresh token not valid!');

@@ -16,6 +16,13 @@ import { appColor } from "../../constants/appColor";
 import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
 import { gql, useQuery } from "@apollo/client";
+import { Validate } from "../../utils/validate";
+
+interface ErrorMessages {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const initValue = {
   username: "",
@@ -27,6 +34,7 @@ const initValue = {
 const SignupScreen = () => {
   const [values, setValues] = useState(initValue);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [errorMessage, setErrorMessage] = useState<any>();
 
   const { data: Data_events, error } = useQuery(
     gql`
@@ -39,9 +47,39 @@ const SignupScreen = () => {
     `
   );
 
-  useEffect(() => {
-    console.log(Data_events);
-  }, [Data_events]);
+  const formValidator = (key: string) => {
+    const data = { ...errorMessage };
+    let message = "";
+    switch (key) {
+      case "email":
+        if (!values.email) {
+          message = "Email is require !";
+        } else if (!Validate.email(values.email)) {
+          message = "Email is not valid !";
+        } else {
+          message = "";
+        }
+        break;
+
+      case "password":
+        !values.password ? "Password is require !" : "";
+        break;
+      case "confirmPassword":
+        if (!values.confirmPassword) {
+          message = "Please type confirm password!";
+        } else if (values.confirmPassword !== values.password) {
+          message = "Password is not match!!!";
+        } else {
+          message = "";
+        }
+        break;
+      default:
+        break;
+    }
+
+    data[`${key}`] = message;
+    setErrorMessage(data);
+  };
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = { ...values };
@@ -50,33 +88,33 @@ const SignupScreen = () => {
   };
 
   const handleSignup = () => {
-    if (
-      values.username.trim() === "" ||
-      values.password.trim() === "" ||
-      values.email.trim() === ""
-    ) {
-      alert("Không được để trống !");
-      return;
-    }
-    if (values.password !== values.confirmPassword) {
-      alert("Xác thực mật khẩu không chính xác !");
-      return;
-    }
-    // thoa cac dk. bat dau goi api
-    AxiosAPI("post", "register", {
-      username: values.username,
-      password: values.password,
-      email: values.email,
-    })
-      .then((result: any) => {
-        navigation.navigate("LoginScreen");
-        console.log(
-          "Tài khoản " + result.data?.Username + " đăng ký thành công"
-        );
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
+    // if (
+    //   values.username.trim() === "" ||
+    //   values.password.trim() === "" ||
+    //   values.email.trim() === ""
+    // ) {
+    //   alert("Không được để trống !");
+    //   return;
+    // }
+    // if (values.password !== values.confirmPassword) {
+    //   alert("Xác thực mật khẩu không chính xác !");
+    //   return;
+    // }
+    // // thoa cac dk. bat dau goi api
+    // AxiosAPI("post", "register", {
+    //   username: values.username,
+    //   password: values.password,
+    //   email: values.email,
+    // })
+    //   .then((result: any) => {
+    //     navigation.navigate("LoginScreen");
+    //     console.log(
+    //       "Tài khoản " + result.data?.Username + " đăng ký thành công"
+    //     );
+    //   })
+    //   .catch((err: any) => {
+    //     console.log(err);
+    //   });
   };
 
   return (
@@ -99,6 +137,7 @@ const SignupScreen = () => {
           onChange={(val) => handleChangeValue("email", val)}
           allowClear
           affix={<Sms size={22} color={appColor.gray} />}
+          onEnd={() => formValidator("email")}
         />
         <InputComponent
           isPassword
@@ -107,6 +146,7 @@ const SignupScreen = () => {
           onChange={(val) => handleChangeValue("password", val)}
           allowClear
           affix={<Lock size={22} color={appColor.gray} />}
+          onEnd={() => formValidator("password")}
         />
         <InputComponent
           isPassword
@@ -115,12 +155,28 @@ const SignupScreen = () => {
           onChange={(val) => handleChangeValue("confirmPassword", val)}
           allowClear
           affix={<Lock size={22} color={appColor.gray} />}
+          onEnd={() => formValidator("confirmPassword")}
         />
       </SectionComponent>
+
+      {(errorMessage.email ||
+        errorMessage.passwprd ||
+        errorMessage.confirmPassword) && (
+        <SectionComponent>
+          {Object.keys(errorMessage).map((error, index) => (
+            <TextComponent
+              text={errorMessage[`${error}`]}
+              key={`error${index}}`}
+              color={appColor.danger}
+            />
+          ))}
+        </SectionComponent>
+      )}
 
       <SpaceComponent height={16} />
       <SectionComponent styles={{ alignItems: "center" }}>
         <ButtonComponent
+        disable
           type="primary"
           text="SIGN UP"
           iconFlex="right"

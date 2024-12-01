@@ -17,23 +17,30 @@ import { appColor } from "../../constants/appColor";
 import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
 import JWTManager from "../../utils/auth/jwt";
-import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { userVar } from "../../graphqlClient/cache";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("hung@gmail.com");
+  const [password, setPassword] = useState("hung");
   const [isRemember, setIsRemember] = useState(true);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   // const number = useReactiveVar(numberVar);
-  const { setItem } = useAsyncStorage("accessToken");
 
   const handleLogin = () => {
     AxiosAPI("post", "login", { username: email, password })
       .then(async (result: any) => {
-        await setItem(result.data.access_token);
+        await AsyncStorage.setItem("accessToken", result.data.access_token);
         JWTManager.setToken(result.data.access_token);
         console.log(result.data.access_token);
-        navigation.navigate("MainScreen");
+
+        userVar(result.data.user)
+
+        await AsyncStorage.setItem(
+          "auth",
+          isRemember ? JSON.stringify(result.data.user) : email
+        );
+        navigation.navigate('MainScreen');
       })
       .catch((err: any) => {
         console.log(err.mesage);
@@ -87,6 +94,7 @@ const LoginScreen = () => {
               value={isRemember}
               onChange={() => setIsRemember(!isRemember)}
             />
+            <SpaceComponent width={4}/>
             <TextComponent text="Remember me!" color={appColor.text} />
           </RowComponent>
           <ButtonComponent

@@ -3,7 +3,7 @@ import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import { appColor } from "../constants/appColor";
 import { fontFamilies } from "../constants/fontFamilies";
@@ -21,6 +21,7 @@ interface Props {
   textStyles?: StyleProp<TextStyle>;
   onPress?: () => void;
   iconFlex?: "right" | "left";
+  disable?: boolean;
 }
 
 const ButtonComponent = (props: Props) => {
@@ -35,9 +36,11 @@ const ButtonComponent = (props: Props) => {
     textStyles,
     onPress,
     iconFlex,
+    disable,
   } = props;
   return type === "primary" ? (
     <TouchableOpacity
+      disabled={disable}
       onPress={onPress}
       style={[
         globalStyles.button,
@@ -60,7 +63,7 @@ const ButtonComponent = (props: Props) => {
           {
             margin: icon ? 12 : 0,
             fontSize: 16,
-            textAlign: 'center'
+            textAlign: "center",
           },
         ]}
         flex={icon && iconFlex === "right" ? 1 : 0}

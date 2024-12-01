@@ -8,5 +8,6 @@ export const appColor = {
     dot: '#7887FF',
     skip:'#ABB4FF',
     link: '#5669ff',
+    danger:'red'
 
 }
