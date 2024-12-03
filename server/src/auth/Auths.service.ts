@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { AccessTokenType } from './types/accessTokenType';
 import { Request, Response } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthsService {
@@ -29,9 +30,9 @@ export class AuthsService {
   }
 
   async validateRegister(username: string, password: string): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { Email: username },
-    });
+    const user = await this.userRepository.query(
+      `select * from Users where Email = '${username}'`,
+    );
     if (user) {
       throw new UnauthorizedException('Tài khoản này đã tồn tại!');
     }
@@ -76,10 +77,41 @@ export class AuthsService {
     };
   }
 
+  async handleSendMail(val: any, email: string) {
+    const verificationCode = Math.round(1000 + Math.random() * 9000);
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      // secure: true,
+      auth: {
+        user: 'quanvujs1990@gmail.com',
+        pass: 'nznvpwqonkkfbhnn',
+      },
+    });
+    try {
+      await transporter.sendMail({
+        from: `Support evenhubfull Application" <${process.env.USERNAME_GMAIL}>`, // sender address
+        to: email, // list of receivers
+        subject: 'Verification email code', // Subject line
+        text: 'Your code to verification email', // plain text body
+        html: `<h1>${verificationCode}</h1>`, // html body
+      });
+      return verificationCode;
+    } catch (error) {
+      console.log(`Can not send email ${error}`);
+    }
+  }
+
+  async verification(req: Request) {
+    const { email } = req.body;
+    const verificationCode = await this.handleSendMail('', email);
+    return { code: verificationCode, email };
+  }
+
   async register(req: Request) {
     const { username, password, email } = req.body;
-    const hashPassword = Crypto.SHA512(password).toString();
 
+    const hashPassword = Crypto.SHA512(password).toString();
     const newAccount = this.userRepository.create({
       Username: username,
       Password: hashPassword,
@@ -87,6 +119,43 @@ export class AuthsService {
     });
     await this.userRepository.save(newAccount);
     return newAccount;
+  }
+
+  async forgotPassword(req: Request) {
+    const { email } = req.body;
+    const user = await this.userRepository.query(
+      `select * from Users where Email = '${email}'`,
+    );
+    if (user) {
+      const newVerificationCode = Math.round(100000 + Math.random() * 99000);
+      const newPassword = Crypto.SHA512(`${newVerificationCode}`).toString();
+      await this.userRepository.query(
+        `update Users set Password = '${newPassword}' where Email = '${email}'`,
+      );
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        // secure: true,
+        auth: {
+          user: process.env.USERNAME_GMAIL,
+          pass: process.env.PASSWORD_UD_GMAIL,
+        },
+      });
+      try {
+        await transporter.sendMail({
+          from: `Support evenhubfull Application" <${process.env.USERNAME_GMAIL}>`, // sender address
+          to: email, // list of receivers
+          subject: 'New password Application evenhub', // Subject line
+          text: 'Your new password to login Evenhub', // plain text body
+          html: `<h1>${newVerificationCode}</h1>`, // html body
+        });
+        return newVerificationCode;
+      } catch (error) {
+        console.log(`Can not reset your password ${error}`);
+      }
+    } else {
+      throw new UnauthorizedException('Tài khoản này không tồn tại!');
+    }
   }
 
   async refresh_token(req: Request, res: Response): Promise<AccessTokenType> {

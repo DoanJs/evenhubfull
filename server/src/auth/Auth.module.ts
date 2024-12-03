@@ -5,6 +5,7 @@ import { User } from 'src/users';
 import { AuthsController } from './Auths.controller';
 import { AuthsService } from './Auths.service';
 import { LoginLocalStrategy } from './Loginlocal.strategy';
+import { RegisterLocalStrategy } from './RegisterLocal.strategy';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { LoginLocalStrategy } from './Loginlocal.strategy';
     }),
   ],
   controllers: [AuthsController],
-  providers: [AuthsService, LoginLocalStrategy], //RegisterLocalStrategy
+  providers: [AuthsService, LoginLocalStrategy, RegisterLocalStrategy], //RegisterLocalStrategy
 })
 export class AuthModule {}

@@ -6,12 +6,12 @@ type RootStackParamList = {
   LoginScreen: undefined;
   SignupScreen: undefined;
   ForgotPassword: undefined;
-  Verification: undefined;
+  Verification: { code: string; email: string; password: string } | undefined;
   OnbroadingScreen: undefined;
 
   // RootScreen: NavigatorScreenParams<RootStackParamList>;
   // MainScreen: NavigatorScreenParams<MainTabParamList>;
-  MainScreen: undefined
+  MainScreen: undefined;
 };
 
 // type MainTabParamList = {

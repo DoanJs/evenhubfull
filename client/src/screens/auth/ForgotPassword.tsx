@@ -13,12 +13,41 @@ import {
 import { appColor } from "../../constants/appColor";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { Validate } from "../../utils/validate";
+import { LoadingModal } from "../../modals";
+import AxiosAPI from "../../utils/auth/callapi";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [email, setEmail] = useState("doanjs1994@gmail.com");
+  const [isDisable, setIsDisable] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCheckEmail = () => {
+    const isValidEmail = Validate.email(email);
+    setIsDisable(!isValidEmail);
+  };
+
+  const handleForgotPassword = async () => {
+    setIsLoading(true);
+    try {
+      AxiosAPI("post", "forgotPassword", { email })
+        .then(async (result: any) => {
+          console.log(result.data);
+        })
+        .catch((err: any) => {
+          console.log(err.mesage);
+        });
+      setIsLoading(false);
+      navigation.navigate("LoginScreen");
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`Can not create new password api forgot password, ${error}`);
+    }
+  };
+
   return (
-    <ContainerComponent back isImageBackground>
+    <ContainerComponent back isImageBackground isScroll>
       <SectionComponent>
         <TextComponent text="Resset Password" title />
         <TextComponent text="Please enter your email address to request a password reset" />
@@ -28,6 +57,7 @@ const ForgotPassword = () => {
           value={email}
           onChange={(val) => setEmail(val)}
           affix={<Sms size={24} color={appColor.gray} />}
+          onEnd={handleCheckEmail}
         />
       </SectionComponent>
       <SectionComponent styles={{ alignItems: "center" }}>
@@ -37,9 +67,11 @@ const ForgotPassword = () => {
           textFonts={fontFamilies.medium}
           iconFlex="right"
           icon={<Image source={arrownRight} height={20} />}
-          onPress={() => navigation.navigate("Verification")}
+          onPress={handleForgotPassword}
+          disable={isDisable}
         />
       </SectionComponent>
+      <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
 };

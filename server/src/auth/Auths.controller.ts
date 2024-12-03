@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { AuthsService } from '.';
 import { LoginAuthGuard } from './Login.Guard';
 import { AccessTokenType } from './types/accessTokenType';
+import { RegisterAuthGuard } from './Register.Guard';
 
 @Controller()
 export class AuthsController {
@@ -17,10 +18,20 @@ export class AuthsController {
     return this.authsService.login(req, res);
   }
 
+  @Post('/verification')
+  // @UseGuards(RegisterAuthGuard)
+  verification(@Req() req: Request) {
+    return this.authsService.verification(req);
+  }
+
   @Post('/register')
-  //   @UseGuards(RegisterAuthGuard)
   register(@Req() req: Request) {
     return this.authsService.register(req);
+  }
+
+  @Post('/forgotPassword')
+  forgotPassword(@Req() req: Request) {
+    return this.authsService.forgotPassword(req);
   }
 
   @Get('/refresh_token')

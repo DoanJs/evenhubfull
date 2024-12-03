@@ -25,7 +25,6 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("hung");
   const [isRemember, setIsRemember] = useState(true);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
-  // const number = useReactiveVar(numberVar);
 
   const handleLogin = () => {
     AxiosAPI("post", "login", { username: email, password })
@@ -43,7 +42,7 @@ const LoginScreen = () => {
         navigation.navigate('MainScreen');
       })
       .catch((err: any) => {
-        console.log(err.mesage);
+        console.log(err);
       });
   };
 
