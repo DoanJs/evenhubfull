@@ -19,7 +19,7 @@ export class AuthsController {
   }
 
   @Post('/verification')
-  // @UseGuards(RegisterAuthGuard)
+  @UseGuards(RegisterAuthGuard)
   verification(@Req() req: Request) {
     return this.authsService.verification(req);
   }

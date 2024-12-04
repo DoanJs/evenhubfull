@@ -20,5 +20,9 @@ export class User {
   @Field({ nullable: true })
   Password: string;
 
+  @Column({ type: 'int', nullable: true })
+  @Field({ nullable: true })
+  isChangePassword: number;
+
   // relation
 }

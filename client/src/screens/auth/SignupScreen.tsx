@@ -121,17 +121,11 @@ const SignupScreen = () => {
     //   values.username.trim() === "" ||
     //   values.password.trim() === "" ||
     //   values.email.trim() === ""
-    // ) {
-    //   alert("Không được để trống !");
-    //   return;
-    // }
-    // if (values.password !== values.confirmPassword) {
-    //   alert("Xác thực mật khẩu không chính xác !");
-    //   return;
-    // }
+    // )
     // thoa cac dk. bat dau goi api
     AxiosAPI("post", "verification", {
-      email: values.email,
+      username: values.email,
+      password: values.password,
     })
       .then((result: any) => {
         const { code } = result.data;
@@ -140,10 +134,10 @@ const SignupScreen = () => {
           ...values,
         });
         setIsLoading(false);
-        console.log(code)
+        console.log(code);
       })
       .catch((err: any) => {
-        console.log(err);
+        alert(err.response.data.message);
         setIsLoading(false);
       });
   };

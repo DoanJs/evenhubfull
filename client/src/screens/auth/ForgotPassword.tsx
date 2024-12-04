@@ -34,14 +34,21 @@ const ForgotPassword = () => {
       AxiosAPI("post", "forgotPassword", { email })
         .then(async (result: any) => {
           console.log(result.data);
+          alert(
+            `Mật khẩu mới đã được gửi vào gmail ${email.replace(
+              /.{1,5}/,
+              (m: any) => "*".repeat(m.length)
+            )}`
+          );
+          navigation.navigate("LoginScreen");
+          setIsLoading(false);
         })
         .catch((err: any) => {
-          console.log(err.mesage);
+          console.log(err.response.data.message);
+          alert(err.response.data.message)
+          setIsLoading(false);
         });
-      setIsLoading(false);
-      navigation.navigate("LoginScreen");
     } catch (error) {
-      setIsLoading(false);
       console.log(`Can not create new password api forgot password, ${error}`);
     }
   };

@@ -72,11 +72,13 @@ const Verification = () => {
   const handleResendVerification = async () => {
     setCodeValues(["", "", "", ""]);
     setNewCode("");
+    ref1.current.focus()
 
     setIsLoading(true);
     try {
       AxiosAPI("post", "verification", {
-        email,
+        username: email,
+        password: password
       })
         .then((result: any) => {
           const { code } = result.data;

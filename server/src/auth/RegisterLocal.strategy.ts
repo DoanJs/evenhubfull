@@ -17,8 +17,8 @@ export class RegisterLocalStrategy extends PassportStrategy(
       username,
       password,
     );
-    if (!account) {
-      throw new UnauthorizedException('Account already exists !');
+    if (account === undefined) {// theo mã đúng là if(!account){...}
+      throw new UnauthorizedException('Tài khoản này đã tồn tại!');
     }
     return account;
   }
