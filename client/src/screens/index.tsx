@@ -1,17 +1,25 @@
+import AddNewScreen from "./AddNewScreen";
 import ForgotPassword from "./auth/ForgotPassword";
 import LoginScreen from "./auth/LoginScreen";
 import OnbroadingScreen from "./auth/OnbroadingScreen";
 import SignupScreen from "./auth/SignupScreen";
 import Verification from "./auth/Verification";
+import EventsScreen from "./events/EventsScreen";
 import HomeScreen from "./home/HomeScreen";
+import MapScreen from "./maps/MapScreen";
+import ProfileScreen from "./profiles/ProfileScreen";
 import SplashScreen from "./SplashScreen";
 
 export {
+  AddNewScreen,
+  EventsScreen,
+  ForgotPassword,
   HomeScreen,
   LoginScreen,
-  SplashScreen,
+  MapScreen,
   OnbroadingScreen,
+  ProfileScreen,
   SignupScreen,
+  SplashScreen,
   Verification,
-  ForgotPassword,
 };

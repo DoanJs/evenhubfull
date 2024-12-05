@@ -15,7 +15,7 @@ interface Props {
 
 const TextComponent = (props: Props) => {
   const { text, color, size, flex, font, styles, title } = props;
-  const fontSizeDefault = Platform.OS === 'ios' ? 16 : 14
+  const fontSizeDefault = Platform.OS === "ios" ? 16 : 14;
   return (
     <Text
       style={[
@@ -23,7 +23,7 @@ const TextComponent = (props: Props) => {
         {
           color: color ?? appColor.text,
           flex: flex ?? 0,
-          fontSize: size ?? title ? 24 : fontSizeDefault,
+          fontSize: size ? size : title ? 24 : fontSizeDefault,
           fontFamily: font ?? title ? fontFamilies.bold : fontFamilies.regular,
         },
         styles,
