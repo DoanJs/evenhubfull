@@ -13,11 +13,13 @@ export class RegisterLocalStrategy extends PassportStrategy(
   }
 
   async validate(username: string, password: string): Promise<any> {
+    console.log(username, password);
     const account = await this.authsService.validateRegister(
       username,
       password,
     );
-    if (account === undefined) {// theo mã đúng là if(!account){...}
+    if (account === undefined) {
+      // theo mã đúng là if(!account){...}
       throw new UnauthorizedException('Tài khoản này đã tồn tại!');
     }
     return account;

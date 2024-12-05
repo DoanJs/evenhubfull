@@ -1,6 +1,6 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Lock, Sms } from "iconsax-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Switch } from "react-native";
 import arrownRight from "../../assets/images/arrowRight.png";
 import TextLogo from "../../assets/images/text-logo.png";
@@ -19,12 +19,23 @@ import { SocialLogin } from "./components";
 import JWTManager from "../../utils/auth/jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userVar } from "../../graphqlClient/cache";
+import { Validate } from "../../utils/validate";
 
 const LoginScreen = () => {
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const [email, setEmail] = useState("hung@gmail.com");
   const [password, setPassword] = useState("hung");
   const [isRemember, setIsRemember] = useState(true);
-  const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [isDisable, setIsDisable] = useState(true);
+
+  useEffect(() => {
+    const emailValidate = Validate.email(email);
+    if (!email || !password || (email && !emailValidate)) {
+      setIsDisable(true);
+    } else {
+      setIsDisable(false);
+    }
+  }, [email, password]);
 
   const handleLogin = () => {
     AxiosAPI("post", "login", { username: email, password })
@@ -33,17 +44,17 @@ const LoginScreen = () => {
         JWTManager.setToken(result.data.access_token);
         console.log(result.data.access_token);
 
-        userVar(result.data.user)
+        userVar(result.data.user);
 
         await AsyncStorage.setItem(
           "auth",
           isRemember ? JSON.stringify(result.data.user) : email
         );
-        navigation.navigate('MainScreen');
+        navigation.navigate("MainScreen");
       })
       .catch((err: any) => {
         console.log(err);
-        alert(err.response.data.message)
+        alert(err.response.data.message);
       });
   };
 
@@ -94,7 +105,7 @@ const LoginScreen = () => {
               value={isRemember}
               onChange={() => setIsRemember(!isRemember)}
             />
-            <SpaceComponent width={4}/>
+            <SpaceComponent width={4} />
             <TextComponent text="Remember me!" color={appColor.text} />
           </RowComponent>
           <ButtonComponent
@@ -112,6 +123,7 @@ const LoginScreen = () => {
           iconFlex="right"
           icon={<Image source={arrownRight} height={20} />}
           onPress={handleLogin}
+          disable={isDisable}
         />
       </SectionComponent>
 

@@ -159,7 +159,9 @@ export class AuthsService {
       });
       return verificationCode;
     } else {
-      throw new UnauthorizedException('Tài khoản này không tồn tại hoặc chưa đăng ký !');
+      throw new UnauthorizedException(
+        'Tài khoản này không tồn tại hoặc chưa đăng ký !',
+      );
     }
   }
 
