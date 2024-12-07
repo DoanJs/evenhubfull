@@ -13,4 +13,11 @@ export class UsersService {
   users(): Promise<User[]> {
     return this.userRepository.query('select * from Users');
   }
+
+  async user(email: string): Promise<User> {
+    const data = await this.userRepository.query(
+      `select * from Users where Email = '${email}'`,
+    );
+    return data[0];
+  }
 }

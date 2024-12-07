@@ -1,4 +1,5 @@
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { userVar } from "../../graphqlClient/cache";
 
 const JWTManager = () => {
   let inMemoryToken: string | null = null;
@@ -18,7 +19,7 @@ const JWTManager = () => {
       Password: decode.Password,
       Email: decode.Email,
     };
-    // accountLoginVar(user)
+    userVar(user)
 
     setRefreshTokenTimeout(Number(decode.exp) - Number(decode.iat));
   };

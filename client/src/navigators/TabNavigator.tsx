@@ -1,7 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AddSquare, Calendar, Location, User } from "iconsax-react-native";
 import React, { ReactNode } from "react";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { CircleComponent, TextComponent } from "../components";
 import { appColor } from "../constants/appColor";
@@ -10,7 +11,6 @@ import EventNavigator from "./EventNavigator";
 import ExploreNavigator from "./ExploreNavigator";
 import MapNavigator from "./MapNavigator";
 import ProfileNavigator from "./ProfileNavigator";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();

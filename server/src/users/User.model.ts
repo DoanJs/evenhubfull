@@ -20,6 +20,10 @@ export class User {
   @Field({ nullable: true })
   Password: string;
 
+  @Column({ type: 'nvarchar', length: 500, nullable: true })
+  @Field({ nullable: true })
+  PhotoUrl: string;
+
   @Column({ type: 'int', nullable: true })
   @Field({ nullable: true })
   isChangePassword: number;
