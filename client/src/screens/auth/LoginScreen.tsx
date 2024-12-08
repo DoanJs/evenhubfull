@@ -18,7 +18,7 @@ import AxiosAPI from "../../utils/auth/callapi";
 import { SocialLogin } from "./components";
 import JWTManager from "../../utils/auth/jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { userVar } from "../../graphqlClient/cache";
+import { tokenVar, userVar } from "../../graphqlClient/cache";
 import { Validate } from "../../utils/validate";
 
 const LoginScreen = () => {
@@ -40,17 +40,18 @@ const LoginScreen = () => {
   const handleLogin = () => {
     AxiosAPI("post", "login", { username: email, password })
       .then(async (result: any) => {
-        await AsyncStorage.setItem("accessToken", result.data.access_token);
-        JWTManager.setToken(result.data.access_token);
-        console.log(result.data.access_token);
+        await AsyncStorage.setItem("accessToken", result.data.access_token); //Phục vụ reload app or mới vào app để check
+        tokenVar(result.data.access_token); //Phục vụ việc navigation with condition
+        userVar(result.data.user); //Lưu user hiện tại vào global state
 
-        userVar(result.data.user);
+        JWTManager.setToken(result.data.access_token);
+        console.log("Login complete, token:", result.data.access_token);
+
 
         await AsyncStorage.setItem(
           "auth",
           isRemember ? JSON.stringify(result.data.user) : email
         );
-        navigation.navigate("MainScreen");
       })
       .catch((err: any) => {
         console.log(err);

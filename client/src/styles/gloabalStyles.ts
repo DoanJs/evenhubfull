@@ -41,4 +41,9 @@ export const globalStyles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
   },
+  tag: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 100
+  }
 });

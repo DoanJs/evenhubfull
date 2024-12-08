@@ -5,6 +5,7 @@ import OnbroadingScreen from "./auth/OnbroadingScreen";
 import SignupScreen from "./auth/SignupScreen";
 import Verification from "./auth/Verification";
 import EventsScreen from "./events/EventsScreen";
+import SearchEvents from "./events/SearchEvents";
 import HomeScreen from "./home/HomeScreen";
 import MapScreen from "./maps/MapScreen";
 import ProfileScreen from "./profiles/ProfileScreen";
@@ -22,4 +23,5 @@ export {
   SignupScreen,
   SplashScreen,
   Verification,
+  SearchEvents
 };

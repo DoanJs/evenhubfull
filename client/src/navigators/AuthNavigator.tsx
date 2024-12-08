@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
 import {
@@ -8,27 +9,19 @@ import {
   Verification,
 } from "../screens";
 import MainNavigator from "./MainNavigator";
-import { useReactiveVar } from "@apollo/client";
-import { userVar } from "../graphqlClient/cache";
 
-const Stack = createNativeStackNavigator();
 const AuthNavigator = () => {
-  const user = useReactiveVar(userVar);
-  const [userCurrent, setUserCurrent] = useState(null);
+  const Stack = createNativeStackNavigator();
+  const [isExistingUser, setIsExistingUser] = useState(false);
 
-  // const [isExistingUser, setIsExistingUser] = useState(false);
-
-  // useEffect(() => {
-  //   checkUserExisting()
-  // }, [])
-
-  // const checkUserExisting = async () => {
-  //   const res = await AsyncStorage.getItem("auth");
-  //   res && setIsExistingUser(true);
-  // };
   useEffect(() => {
-    setUserCurrent(user);
+    checkUserExisting();
   }, []);
+
+  const checkUserExisting = async () => {
+    const res = await AsyncStorage.getItem("auth");
+    res && setIsExistingUser(true);
+  };
 
   return (
     <Stack.Navigator
@@ -36,7 +29,7 @@ const AuthNavigator = () => {
         headerShown: false,
       }}
     >
-      {!userCurrent && (
+      {!isExistingUser && (
         <Stack.Screen name="OnbroadingScreen" component={OnbroadingScreen} />
       )}
       <Stack.Screen name="LoginScreen" component={LoginScreen} />

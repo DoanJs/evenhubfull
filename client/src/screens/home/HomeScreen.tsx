@@ -1,10 +1,22 @@
 import { useReactiveVar } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { ArrowDown, HambergerMenu, Notification } from "iconsax-react-native";
+import {
+  ArrowDown,
+  HambergerMenu,
+  Notification,
+  SearchNormal1,
+  Sort,
+} from "iconsax-react-native";
 import React from "react";
 import { Platform, StatusBar, TouchableOpacity, View } from "react-native";
-import { CircleComponent, RowComponent, TextComponent } from "../../components";
+import {
+  CircleComponent,
+  RowComponent,
+  SpaceComponent,
+  TagComponent,
+  TextComponent,
+} from "../../components";
 import { appColor } from "../../constants/appColor";
 import { userVar } from "../../graphqlClient/cache";
 import { globalStyles } from "../../styles/gloabalStyles";
@@ -47,7 +59,11 @@ const HomeScreen = () => {
                 color={appColor.white2}
                 size={12}
               />
-              <MaterialIcons name="arrow-drop-down" size={20} color={appColor.white} />
+              <MaterialIcons
+                name="arrow-drop-down"
+                size={20}
+                color={appColor.white}
+              />
             </RowComponent>
             <TextComponent
               text="New Yourk, USA"
@@ -66,7 +82,7 @@ const HomeScreen = () => {
                   height: 8,
                   borderRadius: 100,
                   borderWidth: 1,
-                  borderColor: '#524ce0',
+                  borderColor: "#524ce0",
                   position: "absolute",
                   top: 0,
                   right: 0,
@@ -74,6 +90,47 @@ const HomeScreen = () => {
               />
             </View>
           </CircleComponent>
+        </RowComponent>
+        <SpaceComponent height={20} />
+        <RowComponent>
+          <RowComponent
+            styles={{ flex: 1 }}
+            onPress={() =>
+              navigation.navigate("SearchEvents", {
+                isFilter: false,
+              })
+            }
+          >
+            <SearchNormal1 variant="TwoTone" color={appColor.white} size={20} />
+            <View
+              style={{
+                width: 1,
+                height: 20,
+                backgroundColor: appColor.gray2,
+                marginHorizontal: 10,
+              }}
+            />
+            <TextComponent
+              flex={1}
+              text="Search..."
+              color={appColor.gray2}
+              size={16}
+            />
+          </RowComponent>
+          <TagComponent
+            bgColor="#5d56f3"
+            label="Fillters"
+            icon={
+              <CircleComponent size={20} color="#b1aefa">
+                <Sort size={16} color="white" />
+              </CircleComponent>
+            }
+            onPress={() =>
+              navigation.navigate("SearchEvents", {
+                isFilter: true,
+              })
+            }
+          />
         </RowComponent>
         <View
           style={[

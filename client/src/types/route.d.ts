@@ -1,7 +1,6 @@
 declare module "*.png";
 
 type RootStackParamList = {
-  // Profile: { userId: string };
   // Feed: { sort: 'latest' | 'top' } | undefined;
   LoginScreen: undefined;
   SignupScreen: undefined;
@@ -10,11 +9,7 @@ type RootStackParamList = {
   OnbroadingScreen: undefined;
 
   // RootScreen: NavigatorScreenParams<RootStackParamList>;
-  // MainScreen: NavigatorScreenParams<MainTabParamList>;
+  // MainScreen: NavigatorScreenParams<MainParamList>;
   MainScreen: undefined;
+  SearchEvents: { isFilter: boolean };
 };
-
-// type MainTabParamList = {
-//   HomeScreen: undefined;
-//   //   HomeScreen: { userId: string };
-// };
