@@ -1,5 +1,4 @@
 import { useReactiveVar } from "@apollo/client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -19,9 +18,8 @@ import {
   View,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Invite from "../../assets/images/invite.png";
 import {
-  ButtonComponent,
-  CardComponent,
   CategoriesList,
   CircleComponent,
   EventItem,
@@ -33,11 +31,11 @@ import {
   TextComponent,
 } from "../../components";
 import { appColor } from "../../constants/appColor";
+import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { userVar } from "../../graphqlClient/cache";
 import { globalStyles } from "../../styles/gloabalStyles";
-import Invite from "../../assets/images/invite.png";
-import { appInfo } from "../../constants/appInfos";
+import { RootStackParamList } from "../../types/route";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
@@ -173,7 +171,7 @@ const HomeScreen = () => {
         style={[
           {
             flex: 1,
-            marginTop: 16,
+            marginTop: (Platform.OS === "ios" ? 12 : 18),
           },
         ]}
       >

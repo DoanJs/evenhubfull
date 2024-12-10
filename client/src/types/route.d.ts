@@ -1,3 +1,5 @@
+import { EventModel } from "../models/EventModel";
+
 declare module "*.png";
 
 type RootStackParamList = {
@@ -12,4 +14,5 @@ type RootStackParamList = {
   // MainScreen: NavigatorScreenParams<MainParamList>;
   MainScreen: undefined;
   SearchEvents: { isFilter: boolean };
+  EventDetail: { item: EventModel };
 };
