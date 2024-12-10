@@ -1,6 +1,5 @@
 import { EventModel } from "../models/EventModel";
 
-declare module "*.png";
 
 type RootStackParamList = {
   // Feed: { sort: 'latest' | 'top' } | undefined;
