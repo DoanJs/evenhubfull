@@ -11,6 +11,7 @@ import {
 import React from "react";
 import {
   FlatList,
+  ImageBackground,
   Platform,
   ScrollView,
   StatusBar,
@@ -19,6 +20,8 @@ import {
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
+  ButtonComponent,
+  CardComponent,
   CategoriesList,
   CircleComponent,
   EventItem,
@@ -33,6 +36,8 @@ import { appColor } from "../../constants/appColor";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { userVar } from "../../graphqlClient/cache";
 import { globalStyles } from "../../styles/gloabalStyles";
+import Invite from "../../assets/images/invite.png";
+import { appInfo } from "../../constants/appInfos";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
@@ -44,10 +49,10 @@ const HomeScreen = () => {
     description:
       "About Event Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase",
     location: {
-      title: 'Gala Convention Center',
-      address:'36 Guild Street London, UK'
+      title: "Gala Convention Center",
+      address: "36 Guild Street London, UK",
     },
-    imageUrl: '',
+    imageUrl: "",
     users: [""],
     authorId: "",
     startAt: Date.now(),
@@ -172,6 +177,53 @@ const HomeScreen = () => {
           },
         ]}
       >
+        <SectionComponent styles={{ paddingHorizontal: 0 }}>
+          <TabBarComponent onPress={() => {}} title="Upcoming Events" />
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={Array.from({ length: 5 })}
+            renderItem={({ item, index }) => (
+              <EventItem item={itemEvent} key={`event${index}`} type="card" />
+            )}
+          />
+        </SectionComponent>
+        <SectionComponent>
+          <ImageBackground
+            style={{
+              flex: 1,
+              padding: 16,
+              width: appInfo.sizes.WIDTH,
+              minHeight: 127,
+            }}
+            source={Invite}
+            imageStyle={{
+              resizeMode: "cover",
+              borderRadius: 12,
+            }}
+          >
+            <TextComponent text="Invite your friends" size={18} title />
+            <TextComponent text="Get $20 for ticket" size={13} />
+            <RowComponent>
+              <TouchableOpacity
+                style={[
+                  globalStyles.button,
+                  {
+                    marginTop: 12,
+                    backgroundColor: "#00F8FF",
+                    paddingHorizontal: 28,
+                  },
+                ]}
+              >
+                <TextComponent
+                  text="INVITE"
+                  font={fontFamilies.bold}
+                  color={appColor.white}
+                />
+              </TouchableOpacity>
+            </RowComponent>
+          </ImageBackground>
+        </SectionComponent>
         <SectionComponent styles={{ paddingHorizontal: 0 }}>
           <TabBarComponent onPress={() => {}} title="Upcoming Events" />
           <FlatList
