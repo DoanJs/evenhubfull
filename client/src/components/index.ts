@@ -1,8 +1,11 @@
+import AvatarGroup from "./AvatarGroup";
 import ButtonComponent from "./ButtonComponent";
+import CardComponent from "./CardComponent";
 import CategoriesList from "./CategoriesList";
 import CircleComponent from "./CircleComponent";
 import ContainerComponent from "./ContainerComponent";
 import DrawerCustom from "./DrawerCustom";
+import EventItem from "./EventItem";
 import InputComponent from "./InputComponent";
 import RowComponent from "./RowComponent";
 import SectionComponent from "./SectionComponent";
@@ -23,5 +26,8 @@ export {
   DrawerCustom,
   TagComponent,
   CategoriesList,
-  TabBarComponent
+  TabBarComponent,
+  EventItem,
+  CardComponent,
+  AvatarGroup,
 };

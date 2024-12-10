@@ -1,8 +1,8 @@
 import { useReactiveVar } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { useNavigation } from "@react-navigation/native";
 import {
-  ArrowDown,
   HambergerMenu,
   Notification,
   SearchNormal1,
@@ -10,37 +10,48 @@ import {
 } from "iconsax-react-native";
 import React from "react";
 import {
+  FlatList,
   Platform,
   ScrollView,
   StatusBar,
   TouchableOpacity,
   View,
 } from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   CategoriesList,
   CircleComponent,
+  EventItem,
   RowComponent,
+  SectionComponent,
   SpaceComponent,
   TabBarComponent,
   TagComponent,
   TextComponent,
 } from "../../components";
 import { appColor } from "../../constants/appColor";
+import { fontFamilies } from "../../constants/fontFamilies";
 import { userVar } from "../../graphqlClient/cache";
 import { globalStyles } from "../../styles/gloabalStyles";
-import { fontFamilies } from "../../constants/fontFamilies";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
 
   const auth = useReactiveVar(userVar);
 
-  const handleLogout = async () => {
-    await AsyncStorage.setItem("auth", auth ? auth.Email : "");
-    await AsyncStorage.removeItem("accessToken");
-    navigation.navigate("LoginScreen");
+  const itemEvent = {
+    title: "International Band Music Concert",
+    description:
+      "About Event Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase",
+    location: {
+      title: 'Gala Convention Center',
+      address:'36 Guild Street London, UK'
+    },
+    imageUrl: '',
+    users: [""],
+    authorId: "",
+    startAt: Date.now(),
+    endAt: Date.now(),
   };
 
   return (
@@ -157,13 +168,21 @@ const HomeScreen = () => {
         style={[
           {
             flex: 1,
-            marginTop: 16
-            // paddingVertical: 20,
-            // paddingHorizontal: 16
+            marginTop: 16,
           },
         ]}
       >
-        <TabBarComponent onPress={() => {}} title="Upcoming Events" />
+        <SectionComponent styles={{ paddingHorizontal: 0 }}>
+          <TabBarComponent onPress={() => {}} title="Upcoming Events" />
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={Array.from({ length: 5 })}
+            renderItem={({ item, index }) => (
+              <EventItem item={itemEvent} key={`event${index}`} type="card" />
+            )}
+          />
+        </SectionComponent>
       </ScrollView>
     </View>
   );

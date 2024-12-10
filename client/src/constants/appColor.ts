@@ -4,6 +4,8 @@ export const appColor = {
     white: '#fff',
     white2: '#fcfcfc',
     text: '#120D26',
+    text2: '#747688',
+    text3: '#716e9066',
     gray: '#807A7A',
     gray2: '#DADADA',
     gray3: '#E4DFDF',
@@ -11,6 +13,7 @@ export const appColor = {
     dot: '#7887FF',
     skip:'#ABB4FF',
     link: '#5669ff',
-    danger:'red'
+    danger:'red',
+    danger2: '#f0635a'
 
 }
