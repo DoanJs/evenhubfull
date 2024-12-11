@@ -18,6 +18,7 @@ import {
 import { appColor } from "../../constants/appColor";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { LoadingModal } from "../../modals";
+import { RootStackParamList } from "../../types/route";
 import AxiosAPI from "../../utils/auth/callapi";
 import JWTManager from "../../utils/auth/jwt";
 
@@ -72,13 +73,13 @@ const Verification = () => {
   const handleResendVerification = async () => {
     setCodeValues(["", "", "", ""]);
     setNewCode("");
-    ref1.current.focus()
+    ref1.current.focus();
 
     setIsLoading(true);
     try {
       AxiosAPI("post", "verification", {
         username: email,
-        password: password
+        password: password,
       })
         .then((result: any) => {
           const { code } = result.data;

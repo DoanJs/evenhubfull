@@ -171,7 +171,7 @@ const HomeScreen = () => {
         style={[
           {
             flex: 1,
-            marginTop: (Platform.OS === "ios" ? 12 : 18),
+            marginTop: Platform.OS === "ios" ? 12 : 18,
           },
         ]}
       >
@@ -210,6 +210,7 @@ const HomeScreen = () => {
                     marginTop: 12,
                     backgroundColor: "#00F8FF",
                     paddingHorizontal: 28,
+                    minHeight: 32,
                   },
                 ]}
               >

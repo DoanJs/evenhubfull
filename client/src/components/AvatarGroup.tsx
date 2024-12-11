@@ -8,10 +8,12 @@ import SpaceComponent from "./SpaceComponent";
 
 interface Props {
   styles?: StyleProp<ViewStyle>;
+  size?: number;
+  zIndex?: number;
 }
 
 const AvatarGroup = (props: Props) => {
-  const { styles } = props;
+  const { styles, size, zIndex } = props;
   const photoUrl =
     "https://e.khoahoc.tv/photos/image/2015/03/09/dong_vat_11.jpg";
   return (
@@ -26,13 +28,13 @@ const AvatarGroup = (props: Props) => {
           key={`img${index}`}
           source={{ uri: photoUrl }}
           style={{
-            height: 24,
-            width: 24,
+            height: size ?? 24,
+            width: size ?? 24,
             borderRadius: 100,
             borderWidth: 1,
             borderColor: appColor.white,
             marginLeft: index === 0 ? 0 : -8,
-            zIndex: -index,
+            zIndex: zIndex ? zIndex - index : -index,
           }}
         />
       ))}
