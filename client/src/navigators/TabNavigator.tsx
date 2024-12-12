@@ -2,11 +2,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AddSquare, Calendar, Location, User } from "iconsax-react-native";
 import React, { ReactNode } from "react";
-import { Platform } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { CircleComponent, TextComponent } from "../components";
 import { appColor } from "../constants/appColor";
 import { AddNewScreen } from "../screens";
+import { RootStackParamList } from "../types/route";
 import EventNavigator from "./EventNavigator";
 import ExploreNavigator from "./ExploreNavigator";
 import MapNavigator from "./MapNavigator";
@@ -45,27 +46,13 @@ const TabNavigator = () => {
             case "Add":
               icon = (
                 <CircleComponent
+                  disable={true}
                   size={52}
                   styles={{ marginTop: Platform.OS === "ios" ? -50 : -40 }}
                 >
                   <AddSquare color={appColor.white} size={24} variant="Bold" />
                 </CircleComponent>
               );
-              // icon = (
-              //   <View
-              //     style={{
-              //       width: 52,
-              //       height: 52,
-              //       borderRadius: 100,
-              //       backgroundColor: appColor.primary,
-              //       justifyContent: "center",
-              //       alignItems: "center",
-              //       marginTop: Platform.OS === "ios" ? -50 : -40,
-              //     }}
-              //   >
-
-              //   </View>
-              // );
               break;
 
             default:

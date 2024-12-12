@@ -2889,8 +2889,13 @@ expo-keep-awake@~14.0.1:
 
 expo-linear-gradient@~14.0.1:
   version "14.0.1"
-  resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-14.0.1.tgz#f93c518014b6eb5ee17ed6562db716640ad27f3e"
+  resolved "https://registry.npmjs.org/expo-linear-gradient/-/expo-linear-gradient-14.0.1.tgz"
   integrity sha512-apGtUO9AZ52ZWvX9f6K9TamWw8XcUby7jZ0Pcvd5LxUO7pl7tDPx2VlKqpzbhhS4yfCiUwX58wqocwVnE/0ZVg==
+
+expo-location@~18.0.4:
+  version "18.0.4"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-18.0.4.tgz#ccc13fb12751b7b897ce286d77c411094187446b"
+  integrity sha512-OrZTxRpfi4bCJxjW186wt3kfoe0FHwXceE6dXdbxvjxnwMP9cbKeqY6Y2M1bVwboq7PI2eV/e1rOaGq+F+fZyw==
 
 expo-modules-autolinking@2.0.2:
   version "2.0.2"

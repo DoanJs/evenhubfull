@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -23,7 +23,10 @@ interface Props {
   allowClear?: boolean;
   type?: KeyboardTypeOptions;
   inputStyles?: StyleProp<ViewStyle>;
-  onEnd?: () => void
+  onEnd?: () => void;
+  multiline?: boolean;
+  numberOfLines?: number;
+  styles?: StyleProp<ViewStyle>;
 }
 const InputComponent = (props: Props) => {
   const {
@@ -36,15 +39,33 @@ const InputComponent = (props: Props) => {
     isPassword,
     allowClear,
     type,
-    onEnd
+    onEnd,
+    multiline,
+    numberOfLines,
+    styles
   } = props;
   const [isShowPass, setIsShowPass] = useState(isPassword ?? false);
 
   return (
-    <View style={[styles.inputContainer, inputStyles]}>
+    <View
+      style={[
+        globalStyles.inputContainer,
+        inputStyles,
+        {
+          alignItems: multiline ? "flex-start" : "center",
+        },
+        styles
+      ]}
+    >
       {affix ?? affix}
       <TextInput
-        style={[globalStyles.text, styles.input]}
+        style={[
+          globalStyles.text,
+          {
+            paddingHorizontal: affix || suffix ? 12 : 0,
+          },
+          globalStyles.input,
+        ]}
         value={value}
         placeholder={placeholder ?? ""}
         onChangeText={(val) => onChange(val)}
@@ -52,6 +73,8 @@ const InputComponent = (props: Props) => {
         placeholderTextColor={"#747688"}
         keyboardType={type ?? "default"}
         onEndEditing={onEnd}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
       />
       {suffix ?? suffix}
 
@@ -87,6 +110,7 @@ const styles = StyleSheet.create({
     borderColor: appColor.gray3,
     width: "100%",
     minHeight: 56,
+    paddingVertical: 14,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 15,
@@ -97,6 +121,5 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     flex: 1,
-    paddingHorizontal: 14,
   },
 });

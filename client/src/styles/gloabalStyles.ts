@@ -9,7 +9,7 @@ export const globalStyles = StyleSheet.create({
   },
   text: {
     fontFamily: fontFamilies.regular,
-    fontSize: 14,
+    fontSize: 16,
     color: appColor.text,
   },
   button: {
@@ -62,5 +62,24 @@ export const globalStyles = StyleSheet.create({
     padding: 0,
     marginHorizontal: 0,
     marginVertical: 0,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: appColor.gray3,
+    width: "100%",
+    minHeight: 56,
+    paddingVertical: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    backgroundColor: appColor.white,
+    marginBottom: 19,
+  },
+  input: {
+    padding: 0,
+    margin: 0,
+    flex: 1,
   },
 });

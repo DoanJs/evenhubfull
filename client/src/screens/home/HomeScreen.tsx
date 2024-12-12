@@ -1,13 +1,15 @@
 import { useReactiveVar } from "@apollo/client";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import * as Location from "expo-location";
 import {
   HambergerMenu,
   Notification,
   SearchNormal1,
   Sort,
 } from "iconsax-react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   ImageBackground,
@@ -34,12 +36,13 @@ import { appColor } from "../../constants/appColor";
 import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { userVar } from "../../graphqlClient/cache";
+import { AddressModel } from "../../models/AddressModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
-
+  const [currentLocation, setCurrentLocation] = useState<AddressModel>();
   const auth = useReactiveVar(userVar);
 
   const itemEvent = {
@@ -56,6 +59,44 @@ const HomeScreen = () => {
     startAt: Date.now(),
     endAt: Date.now(),
   };
+
+  useEffect(() => {
+    const reverseGeoCode = async ({
+      lat,
+      long,
+    }: {
+      lat: number;
+      long: number;
+    }) => {
+      try {
+        const api = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${long}&lang=vi-VI&apiKey=ZPutiMhrZbuL1-Asb4NriJsqiVqvVWxpKXtNMqUyULg`;
+        const res = await axios(api);
+        if (res && res.status === 200 && res.data) {
+          const items = res.data.items;
+          setCurrentLocation(items[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    async function getCurrentLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        // setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      // setLocation(location);
+      reverseGeoCode({
+        lat: location.coords.latitude,
+        long: location.coords.longitude,
+      });
+    }
+
+    getCurrentLocation();
+  }, []);
 
   return (
     <View style={[globalStyles.container]}>
@@ -88,12 +129,14 @@ const HomeScreen = () => {
                   color={appColor.white}
                 />
               </RowComponent>
-              <TextComponent
-                text="New Yourk, USA"
-                color={appColor.white}
-                font={fontFamilies.bold}
-                size={13}
-              />
+              {currentLocation && (
+                <TextComponent
+                  text={`${currentLocation.address.city}, ${currentLocation.address.countryName}`}
+                  color={appColor.white}
+                  font={fontFamilies.bold}
+                  size={13}
+                />
+              )}
             </View>
             <CircleComponent color="#524ce0" size={36}>
               <View>

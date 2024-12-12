@@ -9,10 +9,11 @@ interface Props {
   color?: string;
   onPress?: () => void;
   styles?: StyleProp<ViewStyle>;
+  disable?: boolean
 }
 
 const CircleComponent = (props: Props) => {
-  const { size, children, color, onPress, styles } = props;
+  const { size, children, color, onPress, styles, disable } = props;
   const styleLocal: any = [
     {
       width: size ?? 40,
@@ -29,7 +30,7 @@ const CircleComponent = (props: Props) => {
       {children}
     </TouchableOpacity>
   ) : (
-    <TouchableOpacity style={styleLocal}>{children}</TouchableOpacity>
+    <TouchableOpacity disabled={disable} style={styleLocal}>{children}</TouchableOpacity>
   );
 };
 

@@ -4,6 +4,7 @@ import {
   ImageBackground,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import React, { ReactNode } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -71,6 +72,7 @@ const ContainerComponent = (props: Props) => {
     </ImageBackground>
   ) : (
     <SafeAreaView style={[globalStyles.container]}>
+      <StatusBar barStyle={'dark-content'}/>
       <View>{headerComponent()}</View>
     </SafeAreaView>
   );
