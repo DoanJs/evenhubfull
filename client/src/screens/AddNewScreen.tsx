@@ -5,8 +5,11 @@ import {
   ButtonComponent,
   ChoiceLocation,
   ContainerComponent,
+  DateTimePickerCpn,
   InputComponent,
+  RowComponent,
   SectionComponent,
+  SpaceComponent,
   TextComponent,
 } from "../components";
 import { useReactiveVar } from "@apollo/client";
@@ -24,6 +27,7 @@ const initValues = {
   authorId: "",
   startAt: Date.now(),
   endAt: Date.now(),
+  date: Date.now(),
 };
 
 const AddNewScreen = () => {
@@ -63,14 +67,26 @@ const AddNewScreen = () => {
           allowClear
           numberOfLines={3}
         />
-        {/* <InputComponent
-          placeholder="Title Address"
-          value={eventData.location.title}
-          onChange={(val: string) => handleChangeValue("", val)}
-          multiline={true}
-          allowClear
-          numberOfLines={3}
-        /> */}
+
+        <RowComponent justify="center">
+          <DateTimePickerCpn
+            type="time"
+            label="Start at: "
+            onSelect={(val: any) => handleChangeValue("startAt", val)}
+          />
+          <SpaceComponent width={20} />
+          <DateTimePickerCpn
+            type="time"
+            label="End at: "
+            onSelect={(val: any) => handleChangeValue("endAt", val)}
+          />
+        </RowComponent>
+        <DateTimePickerCpn
+          type="date"
+          label="Date: "
+          onSelect={(val: any) => handleChangeValue("date", val)}
+        />
+
         <ChoiceLocation />
       </SectionComponent>
       <SectionComponent styles={{ alignItems: "center" }}>
