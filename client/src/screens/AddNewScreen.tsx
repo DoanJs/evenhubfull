@@ -63,6 +63,14 @@ const AddNewScreen = () => {
           allowClear
           numberOfLines={3}
         />
+        {/* <InputComponent
+          placeholder="Title Address"
+          value={eventData.location.title}
+          onChange={(val: string) => handleChangeValue("", val)}
+          multiline={true}
+          allowClear
+          numberOfLines={3}
+        /> */}
         <ChoiceLocation />
       </SectionComponent>
       <SectionComponent styles={{ alignItems: "center" }}>

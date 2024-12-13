@@ -1,12 +1,14 @@
+import axios from "axios";
+import { SearchNormal } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Modal,
-  Text,
-  TouchableOpacity,
+  StyleSheet,
   View,
 } from "react-native";
+import MapView from "react-native-maps";
 import {
   ButtonComponent,
   InputComponent,
@@ -15,8 +17,6 @@ import {
   TextComponent,
 } from "../components";
 import { appColor } from "../constants/appColor";
-import { SearchNormal } from "iconsax-react-native";
-import axios from "axios";
 import { LocationModel } from "../models/LocationModel";
 
 interface Props {
@@ -104,3 +104,13 @@ const ModalLocation = (props: Props) => {
 };
 
 export default ModalLocation;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+});

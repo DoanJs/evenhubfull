@@ -42,7 +42,7 @@ const InputComponent = (props: Props) => {
     onEnd,
     multiline,
     numberOfLines,
-    styles
+    styles,
   } = props;
   const [isShowPass, setIsShowPass] = useState(isPassword ?? false);
 
@@ -53,8 +53,9 @@ const InputComponent = (props: Props) => {
         inputStyles,
         {
           alignItems: multiline ? "flex-start" : "center",
+          minHeight: multiline ? 100 : 56,
         },
-        styles
+        styles,
       ]}
     >
       {affix ?? affix}
