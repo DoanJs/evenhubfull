@@ -4,10 +4,13 @@ export interface EventModel {
     endAt: number
     imageUrl: string
     location: Location
+    // locationTitle: string
+    // locationAddress: string
     startAt: number
     title: string
     users: string[]
     price: string
+    category: string
   }
   
   export interface Location {

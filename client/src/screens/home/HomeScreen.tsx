@@ -40,6 +40,7 @@ import { AddressModel } from "../../models/AddressModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
 
+
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
   const [currentLocation, setCurrentLocation] = useState<AddressModel>();
@@ -58,6 +59,7 @@ const HomeScreen = () => {
     authorId: "",
     startAt: Date.now(),
     endAt: Date.now(),
+    price: ''
   };
 
   useEffect(() => {

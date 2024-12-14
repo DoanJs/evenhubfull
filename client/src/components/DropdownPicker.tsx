@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import { ArrowDown2 } from "iconsax-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -15,7 +14,6 @@ import InputComponent from "./InputComponent";
 import RowComponent from "./RowComponent";
 import SpaceComponent from "./SpaceComponent";
 import TextComponent from "./TextComponent";
-import TagComponent from "./TagComponent";
 
 interface Props {
   label?: string;
@@ -60,22 +58,27 @@ const DropdownPicker = (props: Props) => {
         onPress={
           multiple
             ? () => handleSelectedItems(item.label)
-            : () => modalizeRef.current?.close()
+            : () => {
+                modalizeRef.current?.close();
+                onSelect(item.label);
+              }
         }
         key={item.value}
         justify="flex-start"
         styles={[localStyles.listItem, {}]}
       >
-        <Image
-          source={{
-            uri:
-              item.urlImg ??
-              "https://cdn.vectorstock.com/i/1000v/95/56/user-profile-icon-avatar-or-person-vector-45089556.jpg",
-          }}
-          height={30}
-          width={30}
-          style={[localStyles.selectedImg]}
-        />
+        {multiple && (
+          <Image
+            source={{
+              uri:
+                item.urlImg ??
+                "https://cdn.vectorstock.com/i/1000v/95/56/user-profile-icon-avatar-or-person-vector-45089556.jpg",
+            }}
+            height={30}
+            width={30}
+            style={[localStyles.selectedImg]}
+          />
+        )}
         <TextComponent
           text={item.label}
           color={
@@ -114,25 +117,33 @@ const DropdownPicker = (props: Props) => {
         onPress={() => setIsVisibleModalize(true)}
       >
         <RowComponent styles={[{ flex: 1, flexWrap: "wrap" }]} justify="center">
-          {selectedItems.length > 0 ? (
-            selectedItems.map((item, index) => (
-              <RowComponent key={index} styles={[localStyles.selectedItem]}>
-                <TextComponent
-                  text={item && item.split("@") && item.split("@")[0]}
-                  flex={1}
-                  color={appColor.primary}
-                />
-                <SpaceComponent width={8} />
-                <TouchableOpacity
-                  onPress={() => {
-                    handleSelectedItems(item);
-                    onSelect(item);
-                  }}
-                >
-                  <AntDesign name="close" color={appColor.text} size={20} />
-                </TouchableOpacity>
-              </RowComponent>
-            ))
+          {selected ? (
+            selectedItems.length > 0 ? (
+              selectedItems.map((item, index) => (
+                <RowComponent key={index} styles={[localStyles.selectedItem]}>
+                  <TextComponent
+                    text={item && item.split("@") && item.split("@")[0]}
+                    flex={1}
+                    color={appColor.primary}
+                  />
+                  <SpaceComponent width={8} />
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleSelectedItems(item);
+                      onSelect(item);
+                    }}
+                  >
+                    <AntDesign name="close" color={appColor.text} size={20} />
+                  </TouchableOpacity>
+                </RowComponent>
+              ))
+            ) : (
+              <TextComponent
+                text={
+                  values.find((e) => e.label === selected)?.label ?? ""
+                }
+              />
+            )
           ) : (
             <TextComponent text="Select" styles={{ textAlign: "center" }} />
           )}
@@ -222,7 +233,8 @@ const localStyles = StyleSheet.create({
   selectedItem: {
     borderWidth: 0.5,
     borderColor: appColor.gray,
-    padding: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     marginBottom: 8,
     marginRight: 8,
     borderRadius: 8,

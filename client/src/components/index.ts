@@ -1,5 +1,6 @@
 import AvatarGroup from "./AvatarGroup";
 import ButtonComponent from "./ButtonComponent";
+import ButtonImagePicker from "./ButtonImagePicker";
 import CardComponent from "./CardComponent";
 import CategoriesList from "./CategoriesList";
 import ChoiceLocation from "./ChoiceLocation";
@@ -18,22 +19,6 @@ import TagComponent from "./TagComponent";
 import TextComponent from "./TextComponent";
 
 export {
-  ButtonComponent,
-  InputComponent,
-  SpaceComponent,
-  TextComponent,
-  ContainerComponent,
-  SectionComponent,
-  RowComponent,
-  CircleComponent,
-  DrawerCustom,
-  TagComponent,
-  CategoriesList,
-  TabBarComponent,
-  EventItem,
-  CardComponent,
-  AvatarGroup,
-  ChoiceLocation,
-  DateTimePickerCpn,
-  DropdownPicker
+  AvatarGroup, ButtonComponent, ButtonImagePicker, CardComponent, CategoriesList, ChoiceLocation, CircleComponent, ContainerComponent, DateTimePickerCpn, DrawerCustom, DropdownPicker, EventItem, InputComponent, RowComponent, SectionComponent, SpaceComponent, TabBarComponent, TagComponent, TextComponent
 };
+
