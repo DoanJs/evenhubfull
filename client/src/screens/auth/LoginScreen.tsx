@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Lock, Sms } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
@@ -14,12 +15,12 @@ import {
   TextComponent,
 } from "../../components";
 import { appColor } from "../../constants/appColor";
-import AxiosAPI from "../../utils/auth/callapi";
-import { SocialLogin } from "./components";
-import JWTManager from "../../utils/auth/jwt";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { tokenVar, userVar } from "../../graphqlClient/cache";
+import { RootStackParamList } from "../../types/route";
+import AxiosAPI from "../../utils/auth/callapi";
+import JWTManager from "../../utils/auth/jwt";
 import { Validate } from "../../utils/validate";
+import { SocialLogin } from "./components";
 
 const LoginScreen = () => {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
@@ -46,7 +47,6 @@ const LoginScreen = () => {
 
         JWTManager.setToken(result.data.access_token);
         console.log("Login complete, token:", result.data.access_token);
-
 
         await AsyncStorage.setItem(
           "auth",

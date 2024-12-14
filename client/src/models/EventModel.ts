@@ -7,6 +7,7 @@ export interface EventModel {
     startAt: number
     title: string
     users: string[]
+    price: string
   }
   
   export interface Location {

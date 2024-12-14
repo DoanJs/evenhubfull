@@ -18,6 +18,7 @@ import { SocialLogin } from "./components";
 import { gql, useQuery } from "@apollo/client";
 import { Validate } from "../../utils/validate";
 import { LoadingModal } from "../../modals";
+import { RootStackParamList } from "../../types/route";
 
 const initValue = {
   username: "DoanCuong",

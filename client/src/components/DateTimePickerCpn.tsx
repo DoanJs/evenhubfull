@@ -7,6 +7,7 @@ import { globalStyles } from "../styles/gloabalStyles";
 import RowComponent from "./RowComponent";
 import TextComponent from "./TextComponent";
 import { DateTime } from "../utils/DateTime";
+import { fontFamilies } from "../constants/fontFamilies";
 
 interface Props {
   type: "date" | "time";
@@ -34,6 +35,7 @@ const DateTimePickerCpn = (props: Props) => {
         onPress={() => setShow(true)}
       >
         <TextComponent
+          font={fontFamilies.bold}
           text={
             type === "time" ? DateTime.GetTime(date) : DateTime.GetDate(date)
           }
