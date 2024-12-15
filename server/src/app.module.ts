@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth';
 import { EventModule } from './events/Event.module';
 import { UsersModule } from './users';
+import { DataLoaderModule } from './dataloader/Dataloader.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UsersModule } from './users';
     AuthModule,
     UsersModule,
     EventModule,
+    // DataLoaderModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -85,6 +85,7 @@ export class Event {
       foreignKeyConstraintName: 'FK_UserID_Events_Users',
     },
   })
+  @Field((types) => [User], { nullable: true })
   users: [User];
 }
 

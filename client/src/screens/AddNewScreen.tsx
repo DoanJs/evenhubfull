@@ -20,6 +20,8 @@ import { EventModel } from "../models/EventModel";
 import { SelectModel } from "../models/SelectModel";
 import { _handleImagePicked } from "../utils/uploadImg";
 import { Validate } from "../utils/validate";
+import { LoadingModal } from "../modals";
+import { useNavigation } from "@react-navigation/native";
 
 const initValues = {
   title: "",
@@ -45,6 +47,7 @@ const initValues = {
 };
 
 const AddNewScreen = () => {
+  const navigation: any = useNavigation()
   const user = useReactiveVar(userVar);
   const [eventData, setEventData] = useState<EventModel>({
     ...initValues,
@@ -63,12 +66,13 @@ const AddNewScreen = () => {
       }
     `
   );
+  const [isVisible, setIsVisible] = useState(false);
   const [values, setValues] = useState<SelectModel[]>([]);
   const [fileSelected, setFileSelected] = useState<any>();
   const [errMess, setErrMess] = useState<string[]>([]);
   const [createEvent] = useMutation(
     gql`
-      mutation MUTATION_createEvent ($eventinput: EventInput!) {
+      mutation MUTATION_createEvent($eventinput: EventInput!) {
         createEvent(eventinput: $eventinput) {
           EventID
         }
@@ -115,14 +119,23 @@ const AddNewScreen = () => {
   };
 
   const handleAddEvent = async () => {
+    setIsVisible(true);
+    const selectedItemID = handleSelectID(eventData.users);
     if (fileSelected) {
       await _handleImagePicked(fileSelected)
         .then((result) => {
-          handlePushEvent({...eventData, imageUrl: result as string});
+          handlePushEvent({
+            ...eventData,
+            imageUrl: result as string,
+            users: selectedItemID,
+          });
+          setIsVisible(false);
+          navigation.navigate('Events')
         })
         .catch((err) => console.log("err __handleImagePicked func: ", err));
     } else {
-      handlePushEvent(eventData);
+      handlePushEvent({ ...eventData, users: selectedItemID });
+      setIsVisible(false);
     }
   };
 
@@ -132,12 +145,22 @@ const AddNewScreen = () => {
         eventinput: event,
       },
       onCompleted: (data) => {
-        console.log(data)
+        console.log(data);
       },
       onError: (error) => {
-        console.log('error_createEvent: ', error)
+        console.log("error_createEvent: ", error);
       },
     });
+  };
+
+  const handleSelectID = (arr: string[]) => {
+    let selectItemID: string[] = [];
+    values.map((value: SelectModel) => {
+      if (arr.includes(value.label)) {
+        selectItemID.push(`${value.value}`);
+      }
+    });
+    return selectItemID;
   };
 
   return (
@@ -267,6 +290,8 @@ const AddNewScreen = () => {
           onPress={handleAddEvent}
         />
       </SectionComponent>
+
+      <LoadingModal visible={isVisible} />
     </ContainerComponent>
   );
 };

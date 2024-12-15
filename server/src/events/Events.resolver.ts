@@ -27,4 +27,9 @@ export class EventsResolver {
   author(@Parent() event: Event): Promise<User> {
     return this.eventsService.author(event);
   }
+
+  @ResolveField((returns) => [User])
+  users(@Parent() event: Event): Promise<User[]> {
+    return this.eventsService.users(event);
+  }
 }

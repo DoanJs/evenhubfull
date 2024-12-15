@@ -26,7 +26,14 @@ export class EventsService {
       author: author[0],
     });
     await this.eventRepository.save(result);
-    console.log(eventinput)
+
+    const response = eventinput.users.map(async (userId: any) => {
+      await this.eventRepository.query(
+        `insert into Events_Users (UserID, EventID) values (${Number(userId)}, ${Number(result.EventID)})`,
+      );
+    });
+    Promise.resolve(response);
+
     return result;
   }
 
@@ -34,11 +41,19 @@ export class EventsService {
   async author(event: any): Promise<User> {
     if (event.authorId) {
       const result = await this.eventRepository.query(
-        `select * from Users where UserID = ${event.authorId}`,
+        `select * from Users where UserID = ${event.authorId}`, 
       );
       return result[0];
     } else {
       return null;
     }
+    
+  }
+
+  async users(event: any): Promise<User[]> {
+    const result = await this.eventRepository.query(
+      `select * from Events_Users where EventID = ${event.EventID}`,
+    );
+    return result;
   }
 }

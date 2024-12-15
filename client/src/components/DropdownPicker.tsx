@@ -30,6 +30,17 @@ const DropdownPicker = (props: Props) => {
   const [searchKey, setSearchKey] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
+  //   su dung isVisibleModalize de mo modalize
+  useEffect(() => {
+    if (isVisibleModalize) {
+      modalizeRef.current?.open();
+    }
+  }, [isVisibleModalize]);
+
+  useEffect(() => {
+    onSelect(selectedItems);
+  }, [selectedItems]);
+
   const handleSelectedItems = (label: string) => {
     let list = [...selectedItems];
     const indexID = list.indexOf(label);
@@ -41,16 +52,6 @@ const DropdownPicker = (props: Props) => {
 
     setSelectedItems(list);
   };
-  //   su dung isVisibleModalize de mo modalize
-  useEffect(() => {
-    if (isVisibleModalize) {
-      modalizeRef.current?.open();
-    }
-  }, [isVisibleModalize]);
-
-  useEffect(() => {
-    onSelect(selectedItems);
-  }, [selectedItems]);
 
   const renderSelectItem = (item: SelectModel, index: number) => {
     return (
@@ -139,9 +140,7 @@ const DropdownPicker = (props: Props) => {
               ))
             ) : (
               <TextComponent
-                text={
-                  values.find((e) => e.label === selected)?.label ?? ""
-                }
+                text={values.find((e) => e.label === selected)?.label ?? ""}
               />
             )
           ) : (
