@@ -104,6 +104,7 @@ const DrawerCustom = ({ navigation }: any) => {
   const handleSignOut = async () => {
     await AsyncStorage.setItem("auth", user ? user.Email : "");
     await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("refreshToken");
     tokenVar("");
   };
 

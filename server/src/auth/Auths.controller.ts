@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AuthsService } from '.';
 import { LoginAuthGuard } from './Login.Guard';
 import { AccessTokenType } from './types/accessTokenType';
@@ -13,7 +13,7 @@ export class AuthsController {
   @UseGuards(LoginAuthGuard)
   login(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: any,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<AccessTokenType> {
     return this.authsService.login(req, res);
   }
@@ -34,7 +34,7 @@ export class AuthsController {
     return this.authsService.forgotPassword(req);
   }
 
-  @Get('/refresh_token')
+  @Post('/refresh_token')
   refreshToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: any,

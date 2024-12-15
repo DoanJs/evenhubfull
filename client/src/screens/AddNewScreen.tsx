@@ -1,10 +1,4 @@
-import { gql, useQuery, useReactiveVar } from "@apollo/client";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-} from "@react-native-firebase/storage";
+import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { Image } from "react-native";
 import {
@@ -24,22 +18,22 @@ import { appColor } from "../constants/appColor";
 import { userVar } from "../graphqlClient/cache";
 import { EventModel } from "../models/EventModel";
 import { SelectModel } from "../models/SelectModel";
+import { _handleImagePicked } from "../utils/uploadImg";
 import { Validate } from "../utils/validate";
-import storage from "@react-native-firebase/storage";
 
 const initValues = {
   title: "",
   description: "",
-  // locationTitle: "",
-  // locationAddress: "",
+  locationTitle: "Nha Js",
+  locationAddress: "Da Nang",
   // position: {
   //   lat: '',
   //   long: ''
   // },
-  location: {
-    title: "",
-    address: "",
-  },
+  // location: {
+  //   title: "",
+  //   address: "",
+  // },
   imageUrl: "",
   price: "",
   users: [],
@@ -54,7 +48,7 @@ const AddNewScreen = () => {
   const user = useReactiveVar(userVar);
   const [eventData, setEventData] = useState<EventModel>({
     ...initValues,
-    authorId: user.UserID,
+    authorId: `${user.UserID}`,
   });
   const { data: Data_users, error } = useQuery(
     gql`
@@ -72,6 +66,20 @@ const AddNewScreen = () => {
   const [values, setValues] = useState<SelectModel[]>([]);
   const [fileSelected, setFileSelected] = useState<any>();
   const [errMess, setErrMess] = useState<string[]>([]);
+  const [createEvent] = useMutation(
+    gql`
+      mutation MUTATION_createEvent ($eventinput: EventInput!) {
+        createEvent(eventinput: $eventinput) {
+          EventID
+        }
+      }
+    `,
+    {
+      // refetchQueries: [
+      //   { query: QUERY_denghiTSNTs, variables: { utilsParams: {} } },
+      // ],
+    }
+  );
 
   useEffect(() => {
     if (Data_users) {
@@ -108,59 +116,29 @@ const AddNewScreen = () => {
 
   const handleAddEvent = async () => {
     if (fileSelected) {
-      const filename = `${fileSelected.filename ?? `image-${Date.now()}`}.${
-        fileSelected.uri.split(".")[fileSelected.uri.split(".").length - 1]
-      }`;
-      const path = `image/${filename}`;
-
-      const res = storage().ref(path).putFile(fileSelected.uri);
-
-      res.on(
-        "state_changed",
-        (snap) => {
-          console.log(snap.bytesTransferred);
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          storage()
-            .ref(path)
-            .getDownloadURL()
-            .then((url) => console.log(url));
-        }
-      );
-      console.log(filename);
+      await _handleImagePicked(fileSelected)
+        .then((result) => {
+          handlePushEvent({...eventData, imageUrl: result as string});
+        })
+        .catch((err) => console.log("err __handleImagePicked func: ", err));
     } else {
-      console.log(eventData);
+      handlePushEvent(eventData);
     }
   };
 
-  // async function uploadImageAsync(uri: any) {
-  //   // Why are we using XMLHttpRequest? See:
-  //   // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-  //   const blob = await new Promise((resolve, reject) => {
-  //     const xhr = new XMLHttpRequest();
-  //     xhr.onload = function () {
-  //       resolve(xhr.response);
-  //     };
-  //     xhr.onerror = function (e) {
-  //       console.log(e);
-  //       reject(new TypeError("Network request failed"));
-  //     };
-  //     xhr.responseType = "blob";
-  //     xhr.open("GET", uri, true);
-  //     xhr.send(null);
-  //   });
-
-  //   const fileRef = ref(getStorage(), uuidv4());
-  //   const result = await uploadBytes(fileRef, blob);
-
-  //   // We're done with the blob, close and release it
-  //   blob.close();
-
-  //   return await getDownloadURL(fileRef);
-  // }
+  const handlePushEvent = async (event: EventModel) => {
+    createEvent({
+      variables: {
+        eventinput: event,
+      },
+      onCompleted: (data) => {
+        console.log(data)
+      },
+      onError: (error) => {
+        console.log('error_createEvent: ', error)
+      },
+    });
+  };
 
   return (
     <ContainerComponent isScroll>
@@ -294,6 +272,3 @@ const AddNewScreen = () => {
 };
 
 export default AddNewScreen;
-function uuidv4(): string | undefined {
-  throw new Error("Function not implemented.");
-}

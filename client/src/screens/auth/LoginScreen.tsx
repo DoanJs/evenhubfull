@@ -42,11 +42,12 @@ const LoginScreen = () => {
     AxiosAPI("post", "login", { username: email, password })
       .then(async (result: any) => {
         await AsyncStorage.setItem("accessToken", result.data.access_token); //Phục vụ reload app or mới vào app để check
+        await AsyncStorage.setItem("refreshToken", result.data.refresh_token); //Phục vụ reload app or mới vào app để check
         tokenVar(result.data.access_token); //Phục vụ việc navigation with condition
         userVar(result.data.user); //Lưu user hiện tại vào global state
 
         JWTManager.setToken(result.data.access_token);
-        console.log("Login complete, token:", result.data.access_token);
+        console.log("LoginScreen, token:", result.data.access_token);
 
         await AsyncStorage.setItem(
           "auth",
@@ -54,7 +55,7 @@ const LoginScreen = () => {
         );
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log('LoginScreen: ', err);
         alert(err.response.data.message);
       });
   };

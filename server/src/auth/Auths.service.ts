@@ -82,6 +82,7 @@ export class AuthsService {
 
     return {
       access_token,
+      refresh_token,
       user: { Username: user.Username, Email: user.Email },
     };
   }
@@ -166,7 +167,7 @@ export class AuthsService {
   }
 
   async refresh_token(req: Request, res: Response): Promise<AccessTokenType> {
-    const refreshToken = req.cookies[process.env.REFRESHTOKENCOOKIENAME];
+    const refreshToken = req.body.refresh_token;
     if (!refreshToken) {
       throw new UnauthorizedException('refresh token not exist!');
     }
@@ -212,6 +213,7 @@ export class AuthsService {
           expiresIn: process.env.expiresInToken as string,
           secret: process.env.SECRETOKEN as string,
         }),
+        refresh_token,
         user: {
           Username: existingUser[0].Username,
           Email: existingUser[0].Email,

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { EventsResolver, EventsService } from '.';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Event } from '.';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Event, EventsResolver, EventsService } from '.';
 
 @Module({
   imports: [

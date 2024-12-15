@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Event } from 'src/events';
 
 @Entity({ name: 'Users' })
 @ObjectType()
@@ -29,4 +30,10 @@ export class User {
   isChangePassword: number;
 
   // relation
+
+  @OneToMany(() => Event, (event) => event.author)
+  author_events: [Event];
+
+  @ManyToMany(() => Event, (event) => event.users)
+  user_events: [Event];
 }

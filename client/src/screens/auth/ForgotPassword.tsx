@@ -16,6 +16,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Validate } from "../../utils/validate";
 import { LoadingModal } from "../../modals";
 import AxiosAPI from "../../utils/auth/callapi";
+import { RootStackParamList } from "../../types/route";
 
 const ForgotPassword = () => {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();

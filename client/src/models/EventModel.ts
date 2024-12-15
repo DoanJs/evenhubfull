@@ -2,10 +2,11 @@ export interface EventModel {
     authorId: string
     description: string
     endAt: number
+    date: number
     imageUrl: string
-    location: Location
-    // locationTitle: string
-    // locationAddress: string
+    // location: Location
+    locationTitle: string
+    locationAddress: string
     startAt: number
     title: string
     users: string[]

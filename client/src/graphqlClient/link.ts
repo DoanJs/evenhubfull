@@ -12,7 +12,7 @@ const httpLink = createHttpLink({
 const authLink = setContext(async (_, { headers }) => {
   // get the authentication token from local storage if it exists
   let access_token = JWTManager.getToken();
-  console.log('access_token -->', access_token)
+  console.log('linkGraphQL, accessToken -->', access_token)
   if (!access_token) {
     try {
       const result = await axios({
