@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { PositionInput } from 'src/positions/type/position.input';
 
 @InputType()
 export class EventInput {
@@ -37,4 +38,7 @@ export class EventInput {
 
   @Field((types) => [String], { nullable: true })
   users: [string];
+
+  @Field((types) => PositionInput, { nullable: true })
+  position: PositionInput;
 }

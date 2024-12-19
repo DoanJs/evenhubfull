@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { Image } from "react-native";
 import {
@@ -16,26 +17,21 @@ import {
 } from "../components";
 import { appColor } from "../constants/appColor";
 import { userVar } from "../graphqlClient/cache";
-import { EventModel } from "../models/EventModel";
+import { LoadingModal } from "../modals";
+import { EventModel, Position } from "../models/EventModel";
 import { SelectModel } from "../models/SelectModel";
 import { _handleImagePicked } from "../utils/uploadImg";
 import { Validate } from "../utils/validate";
-import { LoadingModal } from "../modals";
-import { useNavigation } from "@react-navigation/native";
 
 const initValues = {
   title: "",
   description: "",
   locationTitle: "Nha Js",
-  locationAddress: "Da Nang",
-  // position: {
-  //   lat: '',
-  //   long: ''
-  // },
-  // location: {
-  //   title: "",
-  //   address: "",
-  // },
+  locationAddress: "",
+  position: {
+    lat: 0,
+    lng: 0,
+  },
   imageUrl: "",
   price: "",
   users: [],
@@ -47,7 +43,7 @@ const initValues = {
 };
 
 const AddNewScreen = () => {
-  const navigation: any = useNavigation()
+  const navigation: any = useNavigation();
   const user = useReactiveVar(userVar);
   const [eventData, setEventData] = useState<EventModel>({
     ...initValues,
@@ -70,6 +66,10 @@ const AddNewScreen = () => {
   const [values, setValues] = useState<SelectModel[]>([]);
   const [fileSelected, setFileSelected] = useState<any>();
   const [errMess, setErrMess] = useState<string[]>([]);
+  const [addressSelected, setAddressSelected] = useState<{
+    address: string;
+    position: Position;
+  }>();
   const [createEvent] = useMutation(
     gql`
       mutation MUTATION_createEvent($eventinput: EventInput!) {
@@ -102,11 +102,22 @@ const AddNewScreen = () => {
 
   useEffect(() => {
     const mess = Validate.EventValidation(eventData);
-
     setErrMess(mess);
   }, [eventData]);
 
-  const handleChangeValue = (key: string, value: string | string[]) => {
+  useEffect(() => {
+    addressSelected &&
+      setEventData({
+        ...eventData,
+        locationAddress: addressSelected.address as string,
+        position: addressSelected.position as Position,
+      });
+  }, [addressSelected]);
+
+  const handleChangeValue = (
+    key: string,
+    value: string | string[] | { lat: number; lng: number }
+  ) => {
     let data: any = { ...eventData };
     data[`${key}`] = value;
 
@@ -130,7 +141,9 @@ const AddNewScreen = () => {
             users: selectedItemID,
           });
           setIsVisible(false);
-          navigation.navigate('Events')
+          navigation.navigate("Explore", {
+            screen: 'HomeScreen'
+          });
         })
         .catch((err) => console.log("err __handleImagePicked func: ", err));
     } else {
@@ -203,6 +216,7 @@ const AddNewScreen = () => {
           allowClear
           numberOfLines={3}
         />
+
         <DropdownPicker
           label="Category"
           selected={eventData.category}
@@ -259,7 +273,12 @@ const AddNewScreen = () => {
           selected={eventData.users}
         />
 
-        <ChoiceLocation />
+        <ChoiceLocation
+          onSelect={(val: {
+            address: string;
+            position: { lat: number; lng: number };
+          }) => setAddressSelected(val)}
+        />
 
         <InputComponent
           placeholder="Price"

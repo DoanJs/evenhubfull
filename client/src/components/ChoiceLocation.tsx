@@ -1,5 +1,5 @@
 import { ArrowRight2, Flag, Location } from "iconsax-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { appColor } from "../constants/appColor";
 import { globalStyles } from "../styles/gloabalStyles";
@@ -9,8 +9,24 @@ import TextComponent from "./TextComponent";
 import { StyleSheet } from "react-native";
 import { ModalLocation } from "../modals";
 
-const ChoiceLocation = () => {
+interface Props {
+  onSelect: (val: {
+    address: string;
+    position: { lat: number; lng: number };
+  }) => void;
+}
+
+const ChoiceLocation = (props: Props) => {
+  const { onSelect } = props;
   const [isVisibleModalLocation, setIsVisibleModalLocation] = useState(false);
+  const [addressSelected, setAddressSelected] = useState<{
+    address: string;
+    position: { lat: number; lng: number };
+  }>();
+
+  useEffect(() => {
+    addressSelected && onSelect(addressSelected);
+  }, [addressSelected]);
   return (
     <>
       <RowComponent
@@ -32,14 +48,18 @@ const ChoiceLocation = () => {
           </View>
         </View>
         <SpaceComponent width={12} />
-        <TextComponent text="NewYork, USA" flex={1} />
+        <TextComponent
+          numberOfLine={1}
+          text={`${addressSelected ? addressSelected.address : "Choice"}`}
+          flex={1}
+        />
         <ArrowRight2 color={appColor.primary} size={22} />
       </RowComponent>
 
       <ModalLocation
         visible={isVisibleModalLocation}
         onClose={() => setIsVisibleModalLocation(false)}
-        onSelect={(val: string) => console.log(val)}
+        onSelect={(val: any) => setAddressSelected(val)}
       />
     </>
   );

@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Position } from 'src/positions/Position.model';
 import { User } from 'src/users';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -58,7 +60,13 @@ export class Event {
   endAt: Date;
 
   // relation
+  // one-to-one
+  @OneToOne(()=> Position, position=> position.event)
+  @Field({ nullable: true })
+  position: Position
 
+
+  // many-to-one
   @ManyToOne(() => User, (user) => user.author_events, {
     cascade: true,
     eager: true,
@@ -70,6 +78,7 @@ export class Event {
   @Field((types) => User, { nullable: true })
   author: User;
 
+  // many-to-many
   @ManyToMany(() => User, (user) => user.user_events, {
     cascade: true,
     eager: true,
@@ -88,5 +97,3 @@ export class Event {
   @Field((types) => [User], { nullable: true })
   users: [User];
 }
-
-//   users: [],

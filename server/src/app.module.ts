@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth';
 import { EventModule } from './events/Event.module';
 import { UsersModule } from './users';
-import { DataLoaderModule } from './dataloader/Dataloader.module';
+import { PositionModule } from './positions/Position.module';
 
 @Module({
   imports: [
@@ -34,6 +34,7 @@ import { DataLoaderModule } from './dataloader/Dataloader.module';
     AuthModule,
     UsersModule,
     EventModule,
+    PositionModule
     // DataLoaderModule
   ],
   controllers: [AppController],

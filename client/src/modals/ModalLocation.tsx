@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Location from "expo-location";
 import { SearchNormal } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -6,6 +7,7 @@ import {
   FlatList,
   Modal,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
 import MapView from "react-native-maps";
@@ -17,12 +19,20 @@ import {
   TextComponent,
 } from "../components";
 import { appColor } from "../constants/appColor";
+import { appInfo } from "../constants/appInfos";
+import { Position } from "../models/AddressModel";
 import { LocationModel } from "../models/LocationModel";
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSelect: (val: string) => void;
+  onSelect: (val: {
+    address: string;
+    position?: {
+      lat?: number;
+      lng?: number;
+    };
+  }) => void;
 }
 
 const ModalLocation = (props: Props) => {
@@ -30,6 +40,43 @@ const ModalLocation = (props: Props) => {
   const [searchKey, setSearchKey] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [locations, setLocations] = useState<LocationModel[]>([]);
+  const [addressSelected, setAddressSelected] = useState("");
+  const [currentLocation, setCurrentLocation] = useState<Position>();
+
+  useEffect(() => {
+    async function getCurrentLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        // setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+
+      // setLocation(location);
+      location &&
+        setCurrentLocation({
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        });
+    }
+
+    getCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    const handleGeocodeAsync = async (address: string) => {
+      await Location.geocodeAsync(address)
+        .then((data) =>
+          setCurrentLocation({
+            lat: data[0].latitude,
+            lng: data[0].longitude,
+          })
+        )
+        .catch((err) => console.log("ModalLocation err: ", err));
+    };
+    addressSelected && handleGeocodeAsync(addressSelected);
+  }, [addressSelected]);
 
   useEffect(() => {
     if (!searchKey) {
@@ -40,9 +87,8 @@ const ModalLocation = (props: Props) => {
   const handleClose = () => {
     onClose();
   };
-
   const handleSearchLocation = async () => {
-    const api = `https://autocomplete.search.hereapi.com/v1/autocomplete?q=${searchKey}&limit=10&apiKey=ZPutiMhrZbuL1-Asb4NriJsqiVqvVWxpKXtNMqUyULg`;
+    const api = `https://autocomplete.search.hereapi.com/v1/autocomplete?q=${searchKey}&limit=20&lang=vi-VI&apiKey=ZPutiMhrZbuL1-Asb4NriJsqiVqvVWxpKXtNMqUyULg`;
 
     try {
       setIsLoading(true);
@@ -56,15 +102,40 @@ const ModalLocation = (props: Props) => {
       setIsLoading(false);
     }
   };
+  const handleGetAddressFromPossition = async ({
+    latitude,
+    longitude,
+  }: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    await Location.reverseGeocodeAsync({ latitude, longitude })
+      .then((data) => {
+        onSelect({
+          address: data[0].formattedAddress as string,
+          position: {
+            lat: latitude,
+            lng: longitude,
+          },
+        });
+        onClose();
+      })
+      .catch((err) => console.log(err));
+  };
+
+
   return (
     <Modal animationType="slide" visible={visible} style={{ flex: 1 }}>
       <View
         style={{
           paddingVertical: 42,
-          paddingHorizontal: 20,
+          flex: 1,
         }}
       >
-        <RowComponent justify="flex-end" styles={{ marginVertical: 20 }}>
+        <RowComponent
+          justify="flex-end"
+          styles={{ marginVertical: 20, marginHorizontal: 10, zIndex: 5 }}
+        >
           <View style={{ flex: 1 }}>
             <InputComponent
               allowClear
@@ -75,30 +146,94 @@ const ModalLocation = (props: Props) => {
               styles={{ marginBottom: 0 }}
               onEnd={handleSearchLocation}
             />
+            <View
+              style={{
+                top: 60,
+                right: 10,
+                left: 10,
+                position: "absolute",
+                backgroundColor: appColor.white,
+                paddingHorizontal: 10,
+              }}
+            >
+              {isLoading ? (
+                <ActivityIndicator />
+              ) : locations.length > 0 ? (
+                <FlatList
+                  data={locations}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={{ marginBottom: 12 }}
+                      onPress={() => {
+                        setAddressSelected(item.address.label);
+                        setSearchKey("");
+                      }}
+                    >
+                      <TextComponent text={item.address.label} />
+                    </TouchableOpacity>
+                  )}
+                />
+              ) : (
+                <View>
+                  <TextComponent
+                    text={searchKey ? "Location not found !" : ""}
+                  />
+                </View>
+              )}
+            </View>
           </View>
           <SpaceComponent width={12} />
           <ButtonComponent text="Cancel" type="link" onPress={handleClose} />
         </RowComponent>
 
         <View>
-          {isLoading ? (
-            <ActivityIndicator />
-          ) : locations.length > 0 ? (
-            <FlatList
-              data={locations}
-              renderItem={({ item }) => (
-                <View>
-                  <TextComponent text={item.address.label} />
-                </View>
-              )}
+          {currentLocation && (
+            <MapView
+              style={[styles.map]}
+              initialRegion={{
+                latitude: currentLocation.lat as number,
+                longitude: currentLocation.lng as number,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              region={{
+                latitude: currentLocation.lat as number,
+                longitude: currentLocation.lng as number,
+                latitudeDelta: 0.001,
+                longitudeDelta: 0.015,
+              }}
+              showsUserLocation
+              showsMyLocationButton={true}
+              followsUserLocation={true}
+              showsCompass={true}
+              scrollEnabled={true}
+              zoomEnabled={true}
+              pitchEnabled={true}
+              rotateEnabled={true}
+              mapType="standard"
+              onPress={(val) =>
+                handleGetAddressFromPossition({
+                  latitude: val.nativeEvent.coordinate.latitude,
+                  longitude: val.nativeEvent.coordinate.longitude,
+                })
+              }
             />
-          ) : (
-            <View>
-              <TextComponent text={searchKey ? "Location not found !" : ""} />
-            </View>
           )}
         </View>
       </View>
+      <RowComponent justify="center">
+        <ButtonComponent
+          type="primary"
+          text="Confirm"
+          onPress={() => {
+            onSelect({
+              address: addressSelected,
+              position: currentLocation,
+            });
+            onClose();
+          }}
+        />
+      </RowComponent>
     </Modal>
   );
 };
@@ -110,7 +245,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    width: "100%",
-    height: "100%",
+    ...StyleSheet.absoluteFillObject,
+    width: appInfo.sizes.WIDTH,
+    height: 800,
+    zIndex: -1,
+    marginTop: 40,
   },
 });

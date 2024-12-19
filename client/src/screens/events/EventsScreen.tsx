@@ -5,6 +5,8 @@ const EventsScreen = () => {
   return (
     <View>
       <Text>EventsScreen</Text>
+
+      <Text>JS</Text>
     </View>
   );
 };

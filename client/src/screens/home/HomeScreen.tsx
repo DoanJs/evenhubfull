@@ -90,6 +90,7 @@ const HomeScreen = () => {
       }
 
       let location = await Location.getCurrentPositionAsync({});
+
       // setLocation(location);
       reverseGeoCode({
         lat: location.coords.latitude,
@@ -109,7 +110,7 @@ const HomeScreen = () => {
           height: 182,
           borderBottomLeftRadius: 40,
           borderBottomRightRadius: 40,
-          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 52,
+          paddingTop: Platform.OS === "android" ? Number(StatusBar.currentHeight) : 52,
           // paddingHorizontal: 16,
         }}
       >

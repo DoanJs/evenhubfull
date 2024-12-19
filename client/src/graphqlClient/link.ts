@@ -24,7 +24,7 @@ const authLink = setContext(async (_, { headers }) => {
 
       JWTManager.setToken(access_token)
     } catch (error) {
-      console.log(error)
+      console.log('linkGraphQL: error: ', error)
     }
   }
   // return the headers to the context so httpLink can read them

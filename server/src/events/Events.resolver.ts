@@ -2,8 +2,9 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLGuard } from 'src/auth/GraphQL.Guard';
 import { Event, EventsService } from './';
-import { EventInput } from './type/eventInput.dt';
+import { EventInput } from './type/event.input';
 import { User } from 'src/users';
+import { Position } from 'src/positions/Position.model';
 
 @Resolver(() => Event)
 @UseGuards(GraphQLGuard)
@@ -31,5 +32,10 @@ export class EventsResolver {
   @ResolveField((returns) => [User])
   users(@Parent() event: Event): Promise<User[]> {
     return this.eventsService.users(event);
+  }
+
+  @ResolveField((returns) => Position)
+  position(@Parent() event: Event): Promise<Position> {
+    return this.eventsService.position(event);
   }
 }

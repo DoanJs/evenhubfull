@@ -1,21 +1,20 @@
 export interface EventModel {
-    authorId: string
-    description: string
-    endAt: number
-    date: number
-    imageUrl: string
-    // location: Location
-    locationTitle: string
-    locationAddress: string
-    startAt: number
-    title: string
-    users: string[]
-    price: string
-    category: string
-  }
-  
-  export interface Location {
-    address: string
-    title: string
-  }
-  
+  title: string;
+  description: string;
+  locationTitle: string;
+  locationAddress: string;
+  position: Position;
+  imageUrl: string;
+  price: string;
+  users: string[];
+  authorId: string;
+  category: string;
+  startAt: number;
+  endAt: number;
+  date: number;
+}
+
+export interface Position {
+  lat: number;
+  lng: number;
+}
