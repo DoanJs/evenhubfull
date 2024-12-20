@@ -5,6 +5,7 @@ import { Event, EventsService } from './';
 import { EventInput } from './type/event.input';
 import { User } from 'src/users';
 import { Position } from 'src/positions/Position.model';
+import { ParamsInput } from 'src/utils/type/Params.input';
 
 @Resolver(() => Event)
 @UseGuards(GraphQLGuard)
@@ -12,8 +13,11 @@ export class EventsResolver {
   constructor(private eventsService: EventsService) {}
 
   @Query(() => [Event])
-  events(): Promise<Event[]> {
-    return this.eventsService.events();
+  events(
+    @Args('paramsInput') paramsInput: ParamsInput
+  ): Promise<Event[]> {
+    console.log(paramsInput)
+    return this.eventsService.events(paramsInput);
   }
 
   @Mutation((returns) => Event)

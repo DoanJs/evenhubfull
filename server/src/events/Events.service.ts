@@ -5,6 +5,7 @@ import { Event } from './';
 import { EventInput } from './type/event.input';
 import { User } from 'src/users';
 import { Position } from 'src/positions/Position.model';
+import { ParamsInput } from 'src/utils/type/Params.input';
 
 @Injectable()
 export class EventsService {
@@ -13,8 +14,13 @@ export class EventsService {
     private eventRepository: Repository<Event>,
   ) {}
 
-  events(): Promise<Event[]> {
-    return this.eventRepository.query('select * from Events');
+  async events(paramsInput: ParamsInput): Promise<Event[]> {
+    const { take, skip } = paramsInput;
+    return this.eventRepository.find({
+      skip: skip ?? 0,
+      take: take ?? 10,
+    });
+    // return this.eventRepository.query('select * from Events');
   }
 
   async createEvent(eventinput: EventInput): Promise<Event> {

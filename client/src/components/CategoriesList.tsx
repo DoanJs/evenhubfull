@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { appColor } from "../constants/appColor";
 import TagComponent from "./TagComponent";
+import { globalStyles } from "../styles/gloabalStyles";
 
 interface Props {
   isFill?: boolean;
@@ -76,14 +77,19 @@ const CategoriesList = (props: Props) => {
       data={categories}
       renderItem={({ item, index }) => (
         <TagComponent
-          styles={{
-            marginRight: index === categories.length - 1 ? 28 : 12,
-            minWidth: 82,
-          }}
+          styles={[
+            globalStyles.shadow,
+            ,
+            {
+              marginRight: index === categories.length - 1 ? 28 : 12,
+              minWidth: 82,
+            },
+          ]}
           bgColor={isFill ? item.color : appColor.white}
           label={item.label}
           icon={item.icon}
           onPress={() => {}}
+          textColor={isFill ? appColor.white : appColor.text}
         />
       )}
     />
