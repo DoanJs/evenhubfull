@@ -1,8 +1,9 @@
 import { createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { IPADDRESS, PORTSERVER } from "../utils/variables";
-import JWTManager from '../utils/auth/jwt'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import JWTManager from "../utils/auth/jwt";
+import { IPADDRESS, PORTSERVER } from "../utils/variables";
 
 const httpLink = createHttpLink({
   uri: `http://${IPADDRESS}:${PORTSERVER}/graphql`,
@@ -10,9 +11,10 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  let access_token = JWTManager.getToken();
-  console.log('linkGraphQL, accessToken -->', access_token)
+  // let access_token = JWTManager.getToken();
+  let access_token = await AsyncStorage.getItem("accessToken");
+
+  console.log("linkGraphQL, accessToken -->", access_token);
   if (!access_token) {
     try {
       const result = await axios({
@@ -20,11 +22,11 @@ const authLink = setContext(async (_, { headers }) => {
         url: "http://localhost:5000/refresh_token",
         withCredentials: true,
       });
-      access_token = result.data.access_token as string
+      access_token = result.data.access_token as string;
 
-      JWTManager.setToken(access_token)
+      JWTManager.setToken(access_token);
     } catch (error) {
-      console.log('linkGraphQL: error: ', error)
+      console.log("linkGraphQL: error: ", error);
     }
   }
   // return the headers to the context so httpLink can read them

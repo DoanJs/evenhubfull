@@ -12,13 +12,14 @@ import AuthNavigator from "./src/navigators/AuthNavigator";
 import MainNavigator from "./src/navigators/MainNavigator";
 import { SplashScreen } from "./src/screens";
 import JWTManager from "./src/utils/auth/jwt";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import AxiosAPI from "./src/utils/auth/callapi";
 
 SplashSScreen.preventAutoHideAsync();
 
 const App = () => {
   const [isShowSplash, setIsShowSplash] = useState(true);
   const token = useReactiveVar(tokenVar);
-  const { getItem, setItem } = useAsyncStorage("accessToken");
 
   const [loaded, error] = useFonts({
     AirbnbCereal_W_Bd: require("./assets/fonts/AirbnbCereal_W_Bd.otf"),
@@ -45,8 +46,22 @@ const App = () => {
   const checkLogin = async () => {
     const tokenStorage = await AsyncStorage.getItem("accessToken");
     if (tokenStorage) {
-      tokenVar(tokenStorage);
-      JWTManager.setToken(tokenStorage);
+      const decode = jwtDecode<JwtPayload & UserType>(tokenStorage);
+
+      if (decode?.exp && decode.exp < Date.now() / 1000) {
+        const refresh_token = await AsyncStorage.getItem("refreshToken");
+        AxiosAPI("POST", "refresh_token", { refresh_token })
+          .then(async (res) => {
+            JWTManager.setToken(res.data.access_token);
+            await AsyncStorage.setItem("accessToken", res.data.access_token); //Phục vụ reload app or mới vào app để check
+            tokenVar(res.data.access_token)
+            console.log("App-token(59): ", res.data.access_token);
+          })
+          .catch((err) => console.log("App-err(61): ", err));
+      } else {
+        tokenVar(tokenStorage);
+        JWTManager.setToken(tokenStorage);
+      }
     }
   };
 

@@ -11,4 +11,7 @@ export class DataInput {
   @Field({ nullable: true })
   distance?: number;
 
+  @Field({ nullable: true })
+  date?: number;
+
 }

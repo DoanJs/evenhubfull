@@ -96,4 +96,22 @@ export class Event {
   })
   @Field((types) => [User], { nullable: true })
   users: [User];
+
+  @ManyToMany(() => User, (user) => user.user_followers, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinTable({
+    name: 'Events_Followers',
+    joinColumn: {
+      name: 'EventID',
+      foreignKeyConstraintName: 'FK_EventID_Events_Followers',
+    },
+    inverseJoinColumn: {
+      name: 'UserID',
+      foreignKeyConstraintName: 'FK_UserID_Events_Followers',
+    },
+  })
+  @Field((types) => [User], { nullable: true })
+  followers: [User];
 }

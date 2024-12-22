@@ -15,6 +15,9 @@ import CardComponent from "./CardComponent";
 import RowComponent from "./RowComponent";
 import SpaceComponent from "./SpaceComponent";
 import TextComponent from "./TextComponent";
+import { useReactiveVar } from "@apollo/client";
+import { userVar } from "../graphqlClient/cache";
+import { numberToString } from "../utils/numberToString";
 
 interface Props {
   item: EventModel;
@@ -23,6 +26,7 @@ interface Props {
 const EventItem = (props: Props) => {
   const { item, type } = props;
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const user = useReactiveVar(userVar);
 
   return (
     <CardComponent
@@ -37,7 +41,7 @@ const EventItem = (props: Props) => {
           padding: 10,
           height: 131,
         }}
-        source={Avatar}
+        source={{ uri: item.imageUrl }}
         imageStyle={{
           resizeMode: "cover",
           borderRadius: 12,
@@ -48,31 +52,43 @@ const EventItem = (props: Props) => {
             <TextComponent
               font={fontFamilies.bold}
               size={18}
-              text="10"
+              text={numberToString(new Date(item.startAt).getDate()) as string}
               color={appColor.danger2}
             />
             <TextComponent
               font={fontFamilies.bold}
               size={12}
-              text="June"
+              text={appInfo.monthNames[new Date(item.startAt).getMonth()].substring(0,3)}
               color={appColor.danger2}
             />
           </CardComponent>
-          <CardComponent styles={[globalStyles.noSpaceCard]} color="#ffffffb3">
-            <MaterialIcons name="bookmark" color={appColor.danger2} size={22} />
-          </CardComponent>
+          {item.followers &&
+            item.followers.filter(
+              (follower: any) => follower.UserID === user.UserID
+            ).length > 0 && (
+              <CardComponent
+                styles={[globalStyles.noSpaceCard]}
+                color="#ffffffb3"
+              >
+                <MaterialIcons
+                  name="bookmark"
+                  color={appColor.danger2}
+                  size={22}
+                />
+              </CardComponent>
+            )}
         </RowComponent>
       </ImageBackground>
       <TextComponent text={item.title} title size={18} numberOfLine={1} />
-      <AvatarGroup />
+      <AvatarGroup users={item.users}/>
       <RowComponent>
         <Location size={18} variant="Bold" color={appColor.text2} />
         <SpaceComponent width={6} />
         <TextComponent
           flex={1}
           numberOfLine={1}
-          text={item.location.address}
-          size={16}
+          text={item.locationAddress}
+          size={14}
           color={appColor.text3}
         />
       </RowComponent>

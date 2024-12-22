@@ -46,7 +46,7 @@ const LoginScreen = () => {
         tokenVar(result.data.access_token); //Phục vụ việc navigation with condition
         userVar(result.data.user); //Lưu user hiện tại vào global state
 
-        JWTManager.setToken(result.data.access_token);
+        JWTManager.setToken(result.data.access_token);// Bắt đầu khởi động vòng setTimeout()
         console.log("LoginScreen, token:", result.data.access_token);
 
         await AsyncStorage.setItem(

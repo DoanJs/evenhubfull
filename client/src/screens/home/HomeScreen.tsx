@@ -1,4 +1,4 @@
-import { useReactiveVar } from "@apollo/client";
+import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -11,6 +11,7 @@ import {
 } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   ImageBackground,
   Platform,
@@ -25,6 +26,7 @@ import {
   CategoriesList,
   CircleComponent,
   EventItem,
+  LoadingComponent,
   RowComponent,
   SectionComponent,
   SpaceComponent,
@@ -37,30 +39,88 @@ import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { userVar } from "../../graphqlClient/cache";
 import { AddressModel } from "../../models/AddressModel";
+import { EventModel } from "../../models/EventModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
-
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
   const [currentLocation, setCurrentLocation] = useState<AddressModel>();
   const auth = useReactiveVar(userVar);
-
-  const itemEvent = {
-    title: "International Band Music Concert",
-    description:
-      "About Event Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase",
-    location: {
-      title: "Gala Convention Center",
-      address: "36 Guild Street London, UK",
-    },
-    imageUrl: "",
-    users: [""],
-    authorId: "",
-    startAt: Date.now(),
-    endAt: Date.now(),
-    price: ''
-  };
+  const [events, setEvents] = useState<EventModel[]>([]);
+  const [events_nearby, setEvents_nearby] = useState<EventModel[]>([]);
+  const { data: data_events_nearby, loading: loading_events_nearby } = useQuery(
+    gql`
+      query Events_nearby($paramsInput: ParamsInput!) {
+        events_nearby(paramsInput: $paramsInput) {
+          EventID
+          title
+          description
+          locationTitle
+          locationAddress
+          imageUrl
+          price
+          category
+          date
+          startAt
+          endAt
+          position {
+            lat
+            lng
+          }
+          followers {
+            UserID
+          }
+          users {
+            UserID
+            PhotoUrl
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        paramsInput: {
+          data: {
+            lat: currentLocation?.position.lat,
+            long: currentLocation?.position.lng,
+            distance: 1,
+          },
+        },
+      },
+    }
+  );
+  const { data: data_events_upcoming, loading: loading_events_upcoming } =
+    useQuery(
+      gql`
+        query Events_upcoming {
+          events_upcoming {
+            EventID
+            title
+            description
+            locationTitle
+            locationAddress
+            imageUrl
+            price
+            category
+            date
+            startAt
+            endAt
+            position {
+              lat
+              lng
+            }
+            followers {
+              UserID
+            }
+            users {
+              UserID
+              PhotoUrl
+            }
+          }
+        }
+      `
+    );
 
   useEffect(() => {
     const reverseGeoCode = async ({
@@ -101,6 +161,18 @@ const HomeScreen = () => {
     getCurrentLocation();
   }, []);
 
+  useEffect(() => {
+    if (data_events_upcoming) {
+      setEvents(data_events_upcoming.events_upcoming);
+    }
+  }, [data_events_upcoming]);
+
+  useEffect(() => {
+    if (data_events_nearby) {
+      setEvents_nearby(data_events_nearby.events_nearby);
+    }
+  }, [data_events_nearby]);
+
   return (
     <View style={[globalStyles.container]}>
       <StatusBar barStyle={"light-content"} />
@@ -110,7 +182,8 @@ const HomeScreen = () => {
           height: 182,
           borderBottomLeftRadius: 40,
           borderBottomRightRadius: 40,
-          paddingTop: Platform.OS === "android" ? Number(StatusBar.currentHeight) : 52,
+          paddingTop:
+            Platform.OS === "android" ? Number(StatusBar.currentHeight) : 52,
           // paddingHorizontal: 16,
         }}
       >
@@ -223,14 +296,25 @@ const HomeScreen = () => {
       >
         <SectionComponent styles={{ paddingHorizontal: 0 }}>
           <TabBarComponent onPress={() => {}} title="Upcoming Events" />
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={Array.from({ length: 5 })}
-            renderItem={({ item, index }) => (
-              <EventItem item={itemEvent} key={`event${index}`} type="card" />
-            )}
-          />
+          {events.length > 0 ? (
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={events}
+              renderItem={({ item }: { item: EventModel }) => (
+                <EventItem
+                  item={item}
+                  key={`event${item.EventID}`}
+                  type="card"
+                />
+              )}
+            />
+          ) : (
+            <LoadingComponent
+              isLoading={loading_events_upcoming}
+              value={events?.length as number}
+            />
+          )}
         </SectionComponent>
         <SectionComponent>
           <ImageBackground
@@ -270,15 +354,26 @@ const HomeScreen = () => {
           </ImageBackground>
         </SectionComponent>
         <SectionComponent styles={{ paddingHorizontal: 0 }}>
-          <TabBarComponent onPress={() => {}} title="Upcoming Events" />
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={Array.from({ length: 5 })}
-            renderItem={({ item, index }) => (
-              <EventItem item={itemEvent} key={`event${index}`} type="card" />
-            )}
-          />
+          <TabBarComponent onPress={() => {}} title="Nearby You" />
+          {events_nearby.length > 0 ? (
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={events_nearby}
+              renderItem={({ item }: { item: EventModel }) => (
+                <EventItem
+                  item={item}
+                  key={`event${item.EventID}`}
+                  type="card"
+                />
+              )}
+            />
+          ) : (
+            <LoadingComponent
+              isLoading={loading_events_upcoming}
+              value={events?.length as number}
+            />
+          )}
         </SectionComponent>
       </ScrollView>
     </View>

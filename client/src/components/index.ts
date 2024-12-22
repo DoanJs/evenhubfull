@@ -11,6 +11,7 @@ import DrawerCustom from "./DrawerCustom";
 import DropdownPicker from "./DropdownPicker";
 import EventItem from "./EventItem";
 import InputComponent from "./InputComponent";
+import LoadingComponent from "./LoadingComponent";
 import RowComponent from "./RowComponent";
 import SectionComponent from "./SectionComponent";
 import SpaceComponent from "./SpaceComponent";
@@ -19,6 +20,24 @@ import TagComponent from "./TagComponent";
 import TextComponent from "./TextComponent";
 
 export {
-  AvatarGroup, ButtonComponent, ButtonImagePicker, CardComponent, CategoriesList, ChoiceLocation, CircleComponent, ContainerComponent, DateTimePickerCpn, DrawerCustom, DropdownPicker, EventItem, InputComponent, RowComponent, SectionComponent, SpaceComponent, TabBarComponent, TagComponent, TextComponent
+  AvatarGroup,
+  ButtonComponent,
+  ButtonImagePicker,
+  CardComponent,
+  CategoriesList,
+  ChoiceLocation,
+  CircleComponent,
+  ContainerComponent,
+  DateTimePickerCpn,
+  DrawerCustom,
+  DropdownPicker,
+  EventItem,
+  InputComponent,
+  RowComponent,
+  SectionComponent,
+  SpaceComponent,
+  TabBarComponent,
+  TagComponent,
+  TextComponent,
+  LoadingComponent
 };
-

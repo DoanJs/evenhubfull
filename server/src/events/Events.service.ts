@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Position } from 'src/positions/Position.model';
+import { User } from 'src/users';
+import { ParamsInput } from 'src/utils/type/Params.input';
 import { Repository } from 'typeorm';
 import { Event } from './';
 import { EventInput } from './type/event.input';
-import { User } from 'src/users';
-import { Position } from 'src/positions/Position.model';
-import { ParamsInput } from 'src/utils/type/Params.input';
 
 @Injectable()
 export class EventsService {
@@ -14,13 +14,79 @@ export class EventsService {
     private eventRepository: Repository<Event>,
   ) {}
 
+  toRoad(val: number) {
+    return (val * Math.PI) / 180;
+  }
+
+  calcDistanceLocation({
+    currentLat,
+    currentLong,
+    addressLat,
+    addressLong,
+  }: {
+    currentLat: number;
+    currentLong: number;
+    addressLat: number;
+    addressLong: number;
+  }) {
+    const r = 6371;
+    const dLat = this.toRoad(addressLat - currentLat);
+    const dLon = this.toRoad(addressLong - currentLong);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) *
+        Math.sin(dLon / 2) *
+        Math.cos(this.toRoad(currentLat)) *
+        Math.cos(this.toRoad(addressLat));
+    return r * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  }
+
   async events(paramsInput: ParamsInput): Promise<Event[]> {
     const { take, skip } = paramsInput;
-    return this.eventRepository.find({
-      skip: skip ?? 0,
-      take: take ?? 10,
-    });
-    // return this.eventRepository.query('select * from Events');
+    if (take && skip) {
+      return this.eventRepository.query(`SELECT * FROM Events
+    ORDER BY EventID
+    OFFSET ${skip} ROWS
+    FETCH NEXT ${take} ROWS ONLY`);
+    } else {
+      return this.eventRepository.query('select * from Events');
+    }
+  }
+
+  async events_upcoming(): Promise<Event[]> {
+    const events = await this.eventRepository.query(`select * from Events`);
+    return events.filter((event: any) => event.startAt > Date.now());
+  }
+
+  async events_nearby(paramsInput: ParamsInput): Promise<Event[]> {
+    const { lat, long, distance } = paramsInput.data;
+
+    const events = await this.eventRepository.query(
+      `SELECT Events.*, Positions.lat, Positions.lng 
+          FROM Events 
+            INNER JOIN Positions   
+            ON Events.EventID = Positions.EventID
+      `,
+    );
+
+    if (events.length > 0) {
+      const items = [];
+      events.forEach((item: any) => {
+        const eventDistance = this.calcDistanceLocation({
+          currentLat: lat,
+          currentLong: long,
+          addressLat: item.lat,
+          addressLong: item.lng,
+        });
+
+        if (eventDistance < distance) {
+          const { lat, lng, ...event } = item;
+          items.push(event);
+        }
+      });
+
+      return items.filter((event: any) => event.startAt > Date.now());
+    }
   }
 
   async createEvent(eventinput: EventInput): Promise<Event> {
@@ -61,9 +127,16 @@ export class EventsService {
   }
 
   async users(event: any): Promise<User[]> {
-    const result = await this.eventRepository.query(
+    const usersEvent = await this.eventRepository.query(
       `select * from Events_Users where EventID = ${event.EventID}`,
     );
+    const response = usersEvent.map(async (position: any) => {
+      const result = await this.eventRepository.query(
+        `select * from Users where UserID = ${position.UserID}`,
+      );
+      return result[0];
+    });
+    const result = await Promise.all(response);
     return result;
   }
 
@@ -72,5 +145,12 @@ export class EventsService {
       `select * from Positions where eventId = ${event.EventID}`,
     );
     return result[0];
+  }
+
+  async followers(event: any): Promise<User[]> {
+    const result = await this.eventRepository.query(
+      `select * from Events_Followers where EventID = ${event.EventID}`,
+    );
+    return result;
   }
 }

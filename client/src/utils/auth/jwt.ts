@@ -31,22 +31,12 @@ const JWTManager = () => {
     try {
       const refresh_token = await AsyncStorage.getItem("refreshToken");
       AxiosAPI("POST", "refresh_token", { refresh_token })
-        .then((res) => {
+        .then(async (res) => {
           setToken(res.data.access_token);
+          await AsyncStorage.setItem("accessToken", res.data.access_token); //Phục vụ reload app or mới vào app để check
           console.log("jwt-token: ", res.data.access_token);
         })
         .catch((err) => console.log("jwt err: ", err));
-      //cookies k ton tai trong React Native
-      // const response = await fetch(`http://${IPADDRESS}:${PORTSERVER}/refresh_token`, {
-      //   credentials: "include",
-      //   method: 'POST',
-      //   body: refresh_token
-      // });
-      // const data = (await response.json()) as {
-      //   access_token: string;
-      // };
-
-      // setToken(data.access_token);
       return true;
     } catch (error) {
       console.log("jwt - Error: ", error);
@@ -57,7 +47,7 @@ const JWTManager = () => {
   const setRefreshTokenTimeout = (delay: number) => {
     refreshTokenTimeoutId = window.setTimeout(
       getRefreshToken,
-      delay * 1000 - 5000
+      delay * 1000 - 300000
     );
     return true;
   };

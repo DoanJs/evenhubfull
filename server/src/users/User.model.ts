@@ -30,10 +30,14 @@ export class User {
   isChangePassword: number;
 
   // relation
-
+// one-to-many
   @OneToMany(() => Event, (event) => event.author)
   author_events: [Event];
 
+  // many-to-many
   @ManyToMany(() => Event, (event) => event.users)
   user_events: [Event];
+
+  @ManyToMany(() => Event, (event) => event.followers)
+  user_followers: [Event];
 }
