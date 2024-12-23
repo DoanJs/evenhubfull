@@ -44,6 +44,7 @@ export class EventsResolver {
     return this.eventsService.createEvent(eventinput);
   }
 
+
   // relation
   @ResolveField((returns) => User)
   author(@Parent() event: Event): Promise<User> {

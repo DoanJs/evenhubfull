@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import JWTManager from "../utils/auth/jwt";
 import { IPADDRESS, PORTSERVER } from "../utils/variables";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 const httpLink = createHttpLink({
   uri: `http://${IPADDRESS}:${PORTSERVER}/graphql`,
@@ -13,6 +14,9 @@ const httpLink = createHttpLink({
 const authLink = setContext(async (_, { headers }) => {
   // let access_token = JWTManager.getToken();
   let access_token = await AsyncStorage.getItem("accessToken");
+  // const decode = jwtDecode<JwtPayload & UserType>(access_token);
+  // console.log(decode)
+  // console.log(Date.now()/1000)
 
   console.log("linkGraphQL, accessToken -->", access_token);
   if (!access_token) {

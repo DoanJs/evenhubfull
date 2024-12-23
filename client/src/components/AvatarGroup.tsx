@@ -16,8 +16,6 @@ interface Props {
 
 const AvatarGroup = (props: Props) => {
   const { styles, size, zIndex, users } = props;
-  const photoUrl =
-    "https://e.khoahoc.tv/photos/image/2015/03/09/dong_vat_11.jpg";
   return (
     <RowComponent
       justify="flex-start"

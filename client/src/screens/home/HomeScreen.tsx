@@ -37,7 +37,7 @@ import {
 import { appColor } from "../../constants/appColor";
 import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
-import { userVar } from "../../graphqlClient/cache";
+import { currentLocationVar, userVar } from "../../graphqlClient/cache";
 import { AddressModel } from "../../models/AddressModel";
 import { EventModel } from "../../models/EventModel";
 import { globalStyles } from "../../styles/gloabalStyles";
@@ -49,7 +49,7 @@ const HomeScreen = () => {
   const auth = useReactiveVar(userVar);
   const [events, setEvents] = useState<EventModel[]>([]);
   const [events_nearby, setEvents_nearby] = useState<EventModel[]>([]);
-  const { data: data_events_nearby, loading: loading_events_nearby } = useQuery(
+  const { data: data_events_nearby, loading: loading_events_nearby , error} = useQuery(
     gql`
       query Events_nearby($paramsInput: ParamsInput!) {
         events_nearby(paramsInput: $paramsInput) {
@@ -136,6 +136,7 @@ const HomeScreen = () => {
         if (res && res.status === 200 && res.data) {
           const items = res.data.items;
           setCurrentLocation(items[0]);
+          currentLocationVar(items[0])
         }
       } catch (error) {
         console.log(error);
@@ -166,7 +167,7 @@ const HomeScreen = () => {
       setEvents(data_events_upcoming.events_upcoming);
     }
   }, [data_events_upcoming]);
-
+console.log(error)
   useEffect(() => {
     if (data_events_nearby) {
       setEvents_nearby(data_events_nearby.events_nearby);
@@ -370,7 +371,7 @@ const HomeScreen = () => {
             />
           ) : (
             <LoadingComponent
-              isLoading={loading_events_upcoming}
+              isLoading={loading_events_nearby}
               value={events?.length as number}
             />
           )}

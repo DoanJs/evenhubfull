@@ -1,3 +1,4 @@
+import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Calendar, Location } from "iconsax-react-native";
@@ -10,8 +11,8 @@ import {
   View,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import arrowRight from "../../assets/images/arrowRight.png";
 import AuthorEvent from "../../assets/images/author.png";
-import EventImage from "../../assets/images/event-image.png";
 import {
   AvatarGroup,
   ButtonComponent,
@@ -25,18 +26,151 @@ import {
 import { appColor } from "../../constants/appColor";
 import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
+import {
+  currentLocationVar,
+  followersVar,
+  userVar,
+} from "../../graphqlClient/cache";
 import { EventModel } from "../../models/EventModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
-import arrowRight from "../../assets/images/arrowRight.png";
+import { DateTime } from "../../utils/DateTime";
 
 const EventDetail = ({ route }: any) => {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const { item }: { item: EventModel } = route.params;
+  const followers = useReactiveVar(followersVar);
+  const user = useReactiveVar(userVar);
+  const currentLocation = useReactiveVar(currentLocationVar);
+  const [editFollower] = useMutation(
+    gql`
+      mutation EditEventFollower($eventFollowerInput: EventFollowerInput!) {
+        editEventFollower(eventFollowerInput: $eventFollowerInput)
+      }
+    `,
+    {
+      refetchQueries: [
+        {
+          query: gql`
+            query Events_upcoming {
+              events_upcoming {
+                EventID
+                title
+                description
+                locationTitle
+                locationAddress
+                imageUrl
+                price
+                category
+                date
+                startAt
+                endAt
+                position {
+                  lat
+                  lng
+                }
+                followers {
+                  UserID
+                }
+                users {
+                  UserID
+                  PhotoUrl
+                }
+              }
+            }
+          `,
+        },
+        {
+          query: gql`
+            query ($email: String!) {
+              user(email: $email) {
+                UserID
+                Username
+                Password
+                Email
+                PhotoUrl
+                user_followers {
+                  EventID
+                }
+              }
+            }
+          `,
+          variables: {
+            email: user.Email,
+          },
+        },
+        {
+          query: gql`
+            query Events_nearby($paramsInput: ParamsInput!) {
+              events_nearby(paramsInput: $paramsInput) {
+                EventID
+                title
+                description
+                locationTitle
+                locationAddress
+                imageUrl
+                price
+                category
+                date
+                startAt
+                endAt
+                position {
+                  lat
+                  lng
+                }
+                followers {
+                  UserID
+                }
+                users {
+                  UserID
+                  PhotoUrl
+                }
+              }
+            }
+          `,
+          variables: {
+            paramsInput: {
+              data: {
+                lat: currentLocation?.position.lat,
+                long: currentLocation?.position.lng,
+                distance: 1,
+              },
+            },
+          },
+        },
+      ],
+    }
+  );
+
+  const handleFollower = () => {
+    const arr: any = [];
+    let type: "insert" | "delete" = "delete";
+
+    const index = followers.findIndex(
+      (follower) => follower.EventID === item.EventID
+    );
+    if (index === -1) {
+      arr.push({ EventID: item.EventID, __typename: "Event" });
+      type = "insert";
+    } else {
+      arr.splice(index, 1);
+    }
+
+    followersVar(arr);
+    editFollower({
+      variables: {
+        eventFollowerInput: {
+          type,
+          UserID: user.UserID,
+          EventID: item.EventID,
+        },
+      },
+    });
+  };
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground
-        source={EventImage}
+        source={{ uri: item.imageUrl }}
         style={{
           flex: 1,
           height: 244,
@@ -69,6 +203,7 @@ const EventDetail = ({ route }: any) => {
               />
             </RowComponent>
             <CardComponent
+              onPress={handleFollower}
               styles={[
                 globalStyles.noSpaceCard,
                 {
@@ -80,7 +215,18 @@ const EventDetail = ({ route }: any) => {
               ]}
               color="#ffffff4d"
             >
-              <MaterialIcons name="bookmark" color={appColor.white} size={22} />
+              <MaterialIcons
+                name="bookmark"
+                color={
+                  followers &&
+                  followers.filter(
+                    (follower: any) => follower.EventID === item.EventID
+                  ).length > 0
+                    ? appColor.danger2
+                    : appColor.white
+                }
+                size={22}
+              />
             </CardComponent>
           </RowComponent>
         </LinearGradient>
@@ -94,44 +240,55 @@ const EventDetail = ({ route }: any) => {
           }}
         >
           <SectionComponent>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <RowComponent
-                justify="space-between"
-                styles={[
-                  globalStyles.shadow,
-                  {
-                    backgroundColor: appColor.white,
-                    borderRadius: 100,
-                    paddingHorizontal: 12,
-                    width: "90%",
-
-                    alignItems: "center",
-                  },
-                ]}
+            {item.users.length > 0 ? (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                <AvatarGroup size={36} zIndex={5} />
-                <TouchableOpacity
-                  style={[
-                    globalStyles.button,
+                <RowComponent
+                  justify="space-between"
+                  styles={[
+                    globalStyles.shadow,
                     {
-                      backgroundColor: appColor.primary,
-                      paddingVertical: 8,
-                      paddingHorizontal: 16,
-                      minHeight: 0,
+                      backgroundColor: appColor.white,
+                      borderRadius: 100,
+                      paddingHorizontal: 12,
+                      width: "90%",
+
+                      alignItems: "center",
                     },
                   ]}
                 >
-                  <TextComponent text="Invite" color={appColor.white} />
-                </TouchableOpacity>
-              </RowComponent>
-            </View>
+                  <AvatarGroup size={36} zIndex={5} users={item.users} />
+                  <TouchableOpacity
+                    style={[
+                      globalStyles.button,
+                      {
+                        backgroundColor: appColor.primary,
+                        paddingVertical: 8,
+                        paddingHorizontal: 16,
+                        minHeight: 0,
+                      },
+                    ]}
+                  >
+                    <TextComponent text="Invite" color={appColor.white} />
+                  </TouchableOpacity>
+                </RowComponent>
+              </View>
+            ) : (
+              <View style={{ alignItems: "center", borderRadius: 100 }}>
+                <ButtonComponent
+                  styles={{ borderRadius: 100 }}
+                  text="Invite"
+                  type="primary"
+                />
+              </View>
+            )}
           </SectionComponent>
+
           <View
             style={{
               backgroundColor: "#ffffff",
@@ -169,8 +326,12 @@ const EventDetail = ({ route }: any) => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <TextComponent size={16} text="14 December, 2021" title />
-                  <TextComponent size={14} text="Tuesday, 4:00PM - 9:00PM" />
+                  <TextComponent
+                    size={16}
+                    text={DateTime.GetDate(new Date(item.startAt))}
+                    title
+                  />
+                  <TextComponent size={14} text={`Tuesday, 4:00PM - 9:00PM `} />
                 </View>
               </RowComponent>
               <RowComponent>
@@ -196,12 +357,12 @@ const EventDetail = ({ route }: any) => {
                     justifyContent: "space-around",
                   }}
                 >
+                  <TextComponent size={16} text={item.locationTitle} title />
                   <TextComponent
-                    size={16}
-                    text="Gala Convention Center"
-                    title
+                    size={14}
+                    text={item.locationAddress}
+                    numberOfLine={1}
                   />
-                  <TextComponent size={14} text="36 Guild Street London, UK " />
                 </View>
               </RowComponent>
               <RowComponent styles={{ flex: 1, marginHorizontal: 10 }}>
@@ -267,7 +428,7 @@ const EventDetail = ({ route }: any) => {
         <ButtonComponent
           type="primary"
           text="BUY TICKET $120"
-          onPress={() => alert('Buy ticket')}
+          onPress={() => alert("Buy ticket")}
           icon={<Image source={arrowRight} height={20} />}
           iconFlex="right"
         />

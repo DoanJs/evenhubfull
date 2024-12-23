@@ -1,23 +1,5 @@
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React, { ReactNode, useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { tokenVar, userVar } from "../graphqlClient/cache";
-import { globalStyles } from "../styles/gloabalStyles";
-import RowComponent from "./RowComponent";
-import SpaceComponent from "./SpaceComponent";
-import TextComponent from "./TextComponent";
-import { appColor } from "../constants/appColor";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Bookmark2,
   Calendar,
@@ -28,11 +10,33 @@ import {
   Sms,
   User,
 } from "iconsax-react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { ReactNode, useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { appColor } from "../constants/appColor";
+import { followersVar, tokenVar, userVar } from "../graphqlClient/cache";
+import { globalStyles } from "../styles/gloabalStyles";
+import RowComponent from "./RowComponent";
+import SpaceComponent from "./SpaceComponent";
+import TextComponent from "./TextComponent";
+
+interface ProfileMenu {
+  key: string;
+  title: string;
+  icon: ReactNode;
+}
 
 const DrawerCustom = ({ navigation }: any) => {
   const user = useReactiveVar(userVar);
-  const { data: Data_user, error } = useQuery(
+  const { data: Data_user } = useQuery(
     gql`
       query ($email: String!) {
         user(email: $email) {
@@ -41,6 +45,9 @@ const DrawerCustom = ({ navigation }: any) => {
           Password
           Email
           PhotoUrl
+          user_followers {
+            EventID
+          }
         }
       }
     `,
@@ -53,11 +60,6 @@ const DrawerCustom = ({ navigation }: any) => {
   const [userCurrent, setUserCurrent]: any = useState();
   const size = 20;
   const color = appColor.gray;
-  interface ProfileMenu {
-    key: string;
-    title: string;
-    icon: ReactNode;
-  }
   const profileMenu: ProfileMenu[] = [
     {
       key: "MyProfile",
@@ -101,18 +103,19 @@ const DrawerCustom = ({ navigation }: any) => {
     },
   ];
 
+  useEffect(() => {
+    if (Data_user) {
+      setUserCurrent(Data_user.user);
+      followersVar(Data_user.user.user_followers);
+    }
+  }, [Data_user]);
+
   const handleSignOut = async () => {
     await AsyncStorage.setItem("auth", user ? user.Email : "");
     await AsyncStorage.removeItem("accessToken");
     await AsyncStorage.removeItem("refreshToken");
     tokenVar("");
   };
-
-  useEffect(() => {
-    if (Data_user) {
-      setUserCurrent(Data_user.user);
-    }
-  }, [Data_user]);
 
   return (
     <View style={[localStyles.container]}>
