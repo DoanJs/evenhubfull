@@ -16,6 +16,9 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyBtIUj9lvqjmIaXhK38BZDulhfLaTkj0X0"
+      },
+      "entitlements": {
+        "aps-environment": "production"
       }
     },
     "android": {

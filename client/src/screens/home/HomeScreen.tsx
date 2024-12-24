@@ -45,11 +45,10 @@ import { RootStackParamList } from "../../types/route";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
-  const [currentLocation, setCurrentLocation] = useState<AddressModel>();
-  const auth = useReactiveVar(userVar);
+  const currentLocation = useReactiveVar(currentLocationVar)
   const [events, setEvents] = useState<EventModel[]>([]);
   const [events_nearby, setEvents_nearby] = useState<EventModel[]>([]);
-  const { data: data_events_nearby, loading: loading_events_nearby , error} = useQuery(
+  const { data: data_events_nearby, loading: loading_events_nearby } = useQuery(
     gql`
       query Events_nearby($paramsInput: ParamsInput!) {
         events_nearby(paramsInput: $paramsInput) {
@@ -74,6 +73,11 @@ const HomeScreen = () => {
           users {
             UserID
             PhotoUrl
+          }
+          author {
+            UserID
+            Email
+            Username
           }
         }
       }
@@ -117,6 +121,11 @@ const HomeScreen = () => {
               UserID
               PhotoUrl
             }
+            author {
+              UserID
+              Email
+              Username
+            }
           }
         }
       `
@@ -135,8 +144,7 @@ const HomeScreen = () => {
         const res = await axios(api);
         if (res && res.status === 200 && res.data) {
           const items = res.data.items;
-          setCurrentLocation(items[0]);
-          currentLocationVar(items[0])
+          currentLocationVar(items[0]);
         }
       } catch (error) {
         console.log(error);
@@ -167,7 +175,7 @@ const HomeScreen = () => {
       setEvents(data_events_upcoming.events_upcoming);
     }
   }, [data_events_upcoming]);
-console.log(error)
+
   useEffect(() => {
     if (data_events_nearby) {
       setEvents_nearby(data_events_nearby.events_nearby);

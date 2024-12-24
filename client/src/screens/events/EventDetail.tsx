@@ -2,7 +2,7 @@ import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowLeft, Calendar, Location } from "iconsax-react-native";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   ImageBackground,
@@ -31,6 +31,7 @@ import {
   followersVar,
   userVar,
 } from "../../graphqlClient/cache";
+import { LoadingModal } from "../../modals";
 import { EventModel } from "../../models/EventModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
@@ -38,6 +39,7 @@ import { DateTime } from "../../utils/DateTime";
 
 const EventDetail = ({ route }: any) => {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [isvisible, setIsvisible] = useState<boolean>(false);
   const { item }: { item: EventModel } = route.params;
   const followers = useReactiveVar(followersVar);
   const user = useReactiveVar(userVar);
@@ -143,6 +145,8 @@ const EventDetail = ({ route }: any) => {
   );
 
   const handleFollower = () => {
+    setIsvisible(true);
+
     const arr: any = [];
     let type: "insert" | "delete" = "delete";
 
@@ -165,8 +169,14 @@ const EventDetail = ({ route }: any) => {
           EventID: item.EventID,
         },
       },
-    });
+    })
+      .then((res) => setIsvisible(false))
+      .catch((err) => {
+        console.log(err);
+        setIsvisible(false);
+      });
   };
+
   return (
     <View style={{ flex: 1 }}>
       <ImageBackground
@@ -190,7 +200,7 @@ const EventDetail = ({ route }: any) => {
               paddingTop: 28,
             }}
           >
-            <RowComponent styles={{ flex: 1 }}>
+            <RowComponent styles={{ flex: 1, paddingVertical: 16 }}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
                 <ArrowLeft size={24} color={appColor.white} />
               </TouchableOpacity>
@@ -202,32 +212,34 @@ const EventDetail = ({ route }: any) => {
                 color={appColor.white}
               />
             </RowComponent>
-            <CardComponent
-              onPress={handleFollower}
-              styles={[
-                globalStyles.noSpaceCard,
-                {
-                  marginVertical: 10,
-                  marginHorizontal: 10,
-                  width: 36,
-                  height: 36,
-                },
-              ]}
-              color="#ffffff4d"
-            >
-              <MaterialIcons
-                name="bookmark"
-                color={
-                  followers &&
-                  followers.filter(
-                    (follower: any) => follower.EventID === item.EventID
-                  ).length > 0
-                    ? appColor.danger2
-                    : appColor.white
-                }
-                size={22}
-              />
-            </CardComponent>
+            {item.author.UserID !== user.UserID && (
+              <CardComponent
+                onPress={handleFollower}
+                styles={[
+                  globalStyles.noSpaceCard,
+                  {
+                    marginVertical: 10,
+                    marginHorizontal: 10,
+                    width: 36,
+                    height: 36,
+                  },
+                ]}
+                color="#ffffff4d"
+              >
+                <MaterialIcons
+                  name="bookmark"
+                  color={
+                    followers &&
+                    followers.filter(
+                      (follower: any) => follower.EventID === item.EventID
+                    ).length > 0
+                      ? appColor.danger2
+                      : appColor.white
+                  }
+                  size={22}
+                />
+              </CardComponent>
+            )}
           </RowComponent>
         </LinearGradient>
 
@@ -331,7 +343,15 @@ const EventDetail = ({ route }: any) => {
                     text={DateTime.GetDate(new Date(item.startAt))}
                     title
                   />
-                  <TextComponent size={14} text={`Tuesday, 4:00PM - 9:00PM `} />
+                  <TextComponent
+                    size={14}
+                    text={`${appInfo.daysName[
+                      new Date(item.startAt).getDay()
+                    ].substring(0, 3)}, ${DateTime.GetStartAndEnd(
+                      item.startAt,
+                      item.endAt
+                    )} `}
+                  />
                 </View>
               </RowComponent>
               <RowComponent>
@@ -383,30 +403,32 @@ const EventDetail = ({ route }: any) => {
                     justifyContent: "space-around",
                   }}
                 >
-                  <TextComponent size={16} text="Ashfak Sayem" title />
-                  <TextComponent size={14} text="Organizer" />
+                  <TextComponent size={16} text={item.author.Username} title />
+                  <TextComponent size={14} text={item.author.Email} />
                 </View>
-                <CardComponent
-                  styles={[
-                    globalStyles.noSpaceCard,
-                    {
-                      marginVertical: 10,
-                      marginHorizontal: 10,
-                      width: 60,
-                      height: 28,
-                    },
-                  ]}
-                  color={appColor.gray6}
-                >
-                  <TextComponent
-                    text="Follow"
-                    color={appColor.primary}
-                    size={12}
-                  />
-                </CardComponent>
+                {user.UserID !== item.author.UserID && (
+                  <CardComponent
+                    styles={[
+                      globalStyles.noSpaceCard,
+                      {
+                        marginVertical: 10,
+                        marginHorizontal: 10,
+                        width: 60,
+                        height: 28,
+                      },
+                    ]}
+                    color={appColor.gray6}
+                  >
+                    <TextComponent
+                      text="Follow"
+                      color={appColor.primary}
+                      size={12}
+                    />
+                  </CardComponent>
+                )}
               </RowComponent>
             </SectionComponent>
-            <SectionComponent>
+            <SectionComponent styles={{ marginBottom: 86 }}>
               <TabBarComponent title="About Event" />
               <TextComponent text={item.description} />
             </SectionComponent>
@@ -433,6 +455,7 @@ const EventDetail = ({ route }: any) => {
           iconFlex="right"
         />
       </LinearGradient>
+      <LoadingModal visible={isvisible} />
     </View>
   );
 };

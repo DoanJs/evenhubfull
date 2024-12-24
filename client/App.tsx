@@ -1,19 +1,18 @@
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import AsyncStorage, {
-  useAsyncStorage,
-} from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import * as Notifications from "expo-notifications";
 import * as SplashSScreen from "expo-splash-screen";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import client from "./src/graphqlClient";
 import { tokenVar } from "./src/graphqlClient/cache";
 import AuthNavigator from "./src/navigators/AuthNavigator";
 import MainNavigator from "./src/navigators/MainNavigator";
 import { SplashScreen } from "./src/screens";
-import JWTManager from "./src/utils/auth/jwt";
-import { jwtDecode, JwtPayload } from "jwt-decode";
 import AxiosAPI from "./src/utils/auth/callapi";
+import JWTManager from "./src/utils/auth/jwt";
 
 SplashSScreen.preventAutoHideAsync();
 
@@ -41,7 +40,13 @@ const App = () => {
 
   useEffect(() => {
     checkLogin();
+    fcmtoken()
   }, []);
+
+  const fcmtoken = async () => {
+    const tokenFCM = (await Notifications.getDevicePushTokenAsync()).data;
+    console.log(tokenFCM)
+  };
 
   const checkLogin = async () => {
     const tokenStorage = await AsyncStorage.getItem("accessToken");
@@ -54,7 +59,7 @@ const App = () => {
           .then(async (res) => {
             JWTManager.setToken(res.data.access_token);
             await AsyncStorage.setItem("accessToken", res.data.access_token); //Phục vụ reload app or mới vào app để check
-            tokenVar(res.data.access_token)
+            tokenVar(res.data.access_token);
             console.log("App-token(59): ", res.data.access_token);
           })
           .catch((err) => console.log("App-err(61): ", err));

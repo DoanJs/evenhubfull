@@ -16,4 +16,23 @@ export class DateTime {
       appInfo.monthNames[date.getMonth()]
     }, ${date.getFullYear()}`;
   };
+
+  static GetDayString = (num: number) => {
+    const date = new Date(num);
+
+    return `${appInfo.daysName[date.getDay()]}, ${
+      appInfo.monthNames[date.getMonth()]
+    } ${numberToString(date.getFullYear())}`;
+  };
+
+  static GetStartAndEnd = (start: number, end: number) => {
+    const dateStart = new Date(start);
+    const dateEnd = new Date(end);
+
+    return `${numberToString(dateStart.getHours())}:${numberToString(
+      dateStart.getMinutes()
+    )}, - ${numberToString(dateEnd.getHours())} : ${numberToString(
+      dateEnd.getMinutes()
+    )}`;
+  };
 }

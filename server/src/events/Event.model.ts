@@ -23,7 +23,7 @@ export class Event {
   @Field({ nullable: true })
   title: string;
 
-  @Column({ type: 'nvarchar', length: 100, nullable: true })
+  @Column({ type: 'nvarchar', length: 'max', nullable: true })
   @Field({ nullable: true })
   description: string;
 
@@ -59,12 +59,23 @@ export class Event {
   @Field({ nullable: true })
   endAt: Date;
 
+  @Column({
+    type: 'date',
+    nullable: true,
+    default: new Date().toLocaleDateString(), //check again !
+  })
+  @Field({ nullable: true })
+  createAt: Date;
+
+  @Column({ type: 'date', nullable: true })
+  @Field({ nullable: true })
+  updateAt: Date;
+
   // relation
   // one-to-one
-  @OneToOne(()=> Position, position=> position.event)
+  @OneToOne(() => Position, (position) => position.event)
   @Field({ nullable: true })
-  position: Position
-
+  position: Position;
 
   // many-to-one
   @ManyToOne(() => User, (user) => user.author_events, {

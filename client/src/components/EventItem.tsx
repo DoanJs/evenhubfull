@@ -1,7 +1,7 @@
 import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Location } from "iconsax-react-native";
-import React from "react";
+import React, { useState } from "react";
 import { ImageBackground } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { appColor } from "../constants/appColor";
@@ -21,6 +21,7 @@ import CardComponent from "./CardComponent";
 import RowComponent from "./RowComponent";
 import SpaceComponent from "./SpaceComponent";
 import TextComponent from "./TextComponent";
+import { LoadingModal } from "../modals";
 
 interface Props {
   item: EventModel;
@@ -29,6 +30,7 @@ interface Props {
 const EventItem = (props: Props) => {
   const { item, type } = props;
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [isvisible, setIsvisible] = useState<boolean>(false);
   const followers = useReactiveVar(followersVar);
   const user = useReactiveVar(userVar);
   const currentLocation = useReactiveVar(currentLocationVar);
@@ -133,6 +135,8 @@ const EventItem = (props: Props) => {
   );
 
   const handleFollower = () => {
+    setIsvisible(true);
+
     const arr: any = [];
     let type: "insert" | "delete" = "delete";
 
@@ -147,6 +151,7 @@ const EventItem = (props: Props) => {
     }
 
     followersVar(arr);
+
     editFollower({
       variables: {
         eventFollowerInput: {
@@ -155,7 +160,12 @@ const EventItem = (props: Props) => {
           EventID: item.EventID,
         },
       },
-    });
+    })
+      .then((res) => setIsvisible(false))
+      .catch((err) => {
+        setIsvisible(false);
+        console.log(err);
+      });
   };
 
   return (
@@ -194,24 +204,25 @@ const EventItem = (props: Props) => {
               color={appColor.danger2}
             />
           </CardComponent>
-          <CardComponent
-            styles={[globalStyles.noSpaceCard]}
-            color="#ffffffb3"
-            onPress={handleFollower}
-          >
-            <MaterialIcons
-              name="bookmark"
-              color={
-                item &&
-                item.followers.filter(
-                  (follower: any) => follower.UserID === user.UserID
-                ).length > 0
-                  ? appColor.danger2
-                  : appColor.white
-              }
-              size={22}
-            />
-          </CardComponent>
+          {item.author.UserID !== user.UserID && (
+            <CardComponent
+              styles={[globalStyles.noSpaceCard]}
+              color="#ffffffb3"
+              onPress={handleFollower}
+            >
+              <MaterialIcons
+                name="bookmark"
+                color={
+                  followers.filter(
+                    (follower: any) => follower.EventID === item.EventID
+                  ).length > 0
+                    ? appColor.danger2
+                    : appColor.white
+                }
+                size={22}
+              />
+            </CardComponent>
+          )}
         </RowComponent>
       </ImageBackground>
       <TextComponent text={item.title} title size={18} numberOfLine={1} />
@@ -227,6 +238,7 @@ const EventItem = (props: Props) => {
           color={appColor.text3}
         />
       </RowComponent>
+      <LoadingModal visible={isvisible} />
     </CardComponent>
   );
 };

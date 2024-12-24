@@ -1,3 +1,5 @@
+import { UserModel } from "./UserModel";
+
 export interface EventModel {
   EventID: number;
   __typename: string;
@@ -12,9 +14,11 @@ export interface EventModel {
   startAt: number;
   endAt: number;
   date: number;
+  createAt: number;
+  updateAt: number;
+  author: UserModel;
   
   users: string[];
-  authorId: string;
   followers: string[];
 }
 

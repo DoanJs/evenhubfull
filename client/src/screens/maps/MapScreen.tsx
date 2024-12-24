@@ -1,9 +1,10 @@
+import { useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
 import { ArrowLeft2 } from "iconsax-react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   CardComponent,
@@ -14,36 +15,12 @@ import {
 } from "../../components";
 import { appColor } from "../../constants/appColor";
 import { appInfo } from "../../constants/appInfos";
-import { Position } from "../../models/EventModel";
+import { currentLocationVar } from "../../graphqlClient/cache";
 import { globalStyles } from "../../styles/gloabalStyles";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const MapScreen = () => {
   const navigation: any = useNavigation();
-  const [currentLocation, setCurrentLocation] = useState<Position>();
-
-  useEffect(() => {
-    async function getCurrentLocation() {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        // setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      //==> loction:  lat: 16.068605708183817,
-      //              long: 108.14307103657613,
-      //              distance: 1
-      // setLocation(location);
-      location &&
-        setCurrentLocation({
-          lat: location.coords.latitude,
-          lng: location.coords.longitude,
-        });
-    }
-
-    getCurrentLocation();
-  }, []);
+  const currentLocation = useReactiveVar(currentLocationVar);
 
   return (
     <View style={{ flex: 1 }}>
@@ -51,20 +28,20 @@ const MapScreen = () => {
         <MapView
           style={[styles.map]}
           initialRegion={{
-            latitude: currentLocation.lat as number,
-            longitude: currentLocation.lng as number,
+            latitude: currentLocation.position.lat as number,
+            longitude: currentLocation.position.lng as number,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
           region={{
-            latitude: currentLocation.lat as number,
-            longitude: currentLocation.lng as number,
+            latitude: currentLocation.position.lat as number,
+            longitude: currentLocation.position.lng as number,
             latitudeDelta: 0.001,
             longitudeDelta: 0.015,
           }}
           showsUserLocation
           showsMyLocationButton={true}
-          followsUserLocation={true}
+          // followsUserLocation={true}
           showsCompass={true}
           scrollEnabled={true}
           zoomEnabled={true}
@@ -82,8 +59,8 @@ const MapScreen = () => {
             title="asd"
             description="asdas"
             coordinate={{
-              latitude: currentLocation.lat,
-              longitude: currentLocation.lng,
+              latitude: currentLocation.position.lat,
+              longitude: currentLocation.position.lng,
             }}
           >
             <View

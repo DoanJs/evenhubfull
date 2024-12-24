@@ -19,4 +19,13 @@ export const appInfo = {
     "November",
     "December",
   ],
+  daysName: [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ],
 };
