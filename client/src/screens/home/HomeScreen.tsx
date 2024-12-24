@@ -94,7 +94,7 @@ const HomeScreen = () => {
       },
     }
   );
-  const { data: data_events_upcoming, loading: loading_events_upcoming } =
+  const { data: data_events_upcoming, loading: loading_events_upcoming, error } =
     useQuery(
       gql`
         query Events_upcoming {
