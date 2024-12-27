@@ -5,7 +5,7 @@ import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import * as SplashSScreen from "expo-splash-screen";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import client from "./src/graphqlClient";
 import { tokenVar } from "./src/graphqlClient/cache";
 import AuthNavigator from "./src/navigators/AuthNavigator";
@@ -13,16 +13,59 @@ import MainNavigator from "./src/navigators/MainNavigator";
 import { SplashScreen } from "./src/screens";
 import AxiosAPI from "./src/utils/auth/callapi";
 import JWTManager from "./src/utils/auth/jwt";
+import { HandleNotification } from "./src/utils/handleNotification";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 SplashSScreen.preventAutoHideAsync();
 
 const App = () => {
   const [isShowSplash, setIsShowSplash] = useState(true);
   const token = useReactiveVar(tokenVar);
-
   const [loaded, error] = useFonts({
     AirbnbCereal_W_Bd: require("./assets/fonts/AirbnbCereal_W_Bd.otf"),
   });
+
+
+  // -->
+  
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const notificationListener = useRef<Notifications.EventSubscription>();
+  const responseListener = useRef<Notifications.EventSubscription>();
+  
+  useEffect(() => {
+    HandleNotification.registerForPushNotificationsAsync().then((token) =>
+      console.log(token)
+    );
+
+    // if (Platform.OS === 'android') {
+    //   Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+    // }
+    // notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    //   setNotification(notification);
+    //   console.log('notification: ',notification)
+    // });
+
+    // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    //   console.log("response: ", response);
+    // });
+
+    // return () => {
+    //   notificationListener.current &&
+    //     Notifications.removeNotificationSubscription(notificationListener.current);
+    //   responseListener.current &&
+    //     Notifications.removeNotificationSubscription(responseListener.current);
+    // };
+  }, []);
+  // <--
 
   useEffect(() => {
     if (loaded || error) {
@@ -40,13 +83,13 @@ const App = () => {
 
   useEffect(() => {
     checkLogin();
-    fcmtoken()
+    // fcmtoken()
   }, []);
 
-  const fcmtoken = async () => {
-    const tokenFCM = (await Notifications.getDevicePushTokenAsync()).data;
-    console.log(tokenFCM)
-  };
+  // const fcmtoken = async () => {
+  //   const tokenFCM = (await Notifications.getDevicePushTokenAsync()).data;
+  //   console.log(tokenFCM)
+  // };
 
   const checkLogin = async () => {
     const tokenStorage = await AsyncStorage.getItem("accessToken");

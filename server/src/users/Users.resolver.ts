@@ -25,8 +25,6 @@ export class UsersResolver {
 
   @Mutation((returns) => String)
   editEventFollower(
-    // @Args('userId') userId: number,
-    // @Args('eventId') eventId: number,
     @Args('eventFollowerInput')
     eventFollowerInput: EventFollowerInput,
   ): Promise<String> {

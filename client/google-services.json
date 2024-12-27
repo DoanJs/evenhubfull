@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "720569578861",
+    "project_id": "evenhubfull-9b9bd",
+    "storage_bucket": "evenhubfull-9b9bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:720569578861:android:2309a4d769962d93981664",
+        "android_client_info": {
+          "package_name": "com.company.evenhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmaFSZuE6Vf-tk3w44gk5FvZPFTLFfghY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

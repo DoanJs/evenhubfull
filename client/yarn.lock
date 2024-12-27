@@ -3862,6 +3862,13 @@ expo-constants@~17.0.0, expo-constants@~17.0.3:
     "@expo/config" "~10.0.4"
     "@expo/env" "~0.4.0"
 
+expo-device@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/expo-device/-/expo-device-7.0.1.tgz#3702fe8b4475eac63ed27f9d580ec8a78546e0d1"
+  integrity sha512-/3lk0f9wvle+6svHqWSCBC1B5NYFmXp1D7hmIyecJJVYRLwzrwwTDyNs76oG/UDU5Appdu8QyDKycsx2hqv71w==
+  dependencies:
+    ua-parser-js "^0.7.33"
+
 expo-file-system@~18.0.4:
   version "18.0.4"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-18.0.4.tgz"
@@ -7066,6 +7073,11 @@ typescript@^5.3.3:
   version "5.7.2"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.7.2.tgz"
   integrity sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==
+
+ua-parser-js@^0.7.33:
+  version "0.7.40"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.40.tgz#c87d83b7bb25822ecfa6397a0da5903934ea1562"
+  integrity sha512-us1E3K+3jJppDBa3Tl0L3MOJiGhe1C6P0+nIvQAFYbxlMAx0h81eOwLmU57xgqToduDDPx3y5QsdjPfDu+FgOQ==
 
 ua-parser-js@^1.0.35:
   version "1.0.39"

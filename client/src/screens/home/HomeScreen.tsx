@@ -11,7 +11,6 @@ import {
 } from "iconsax-react-native";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   ImageBackground,
   Platform,
@@ -37,15 +36,15 @@ import {
 import { appColor } from "../../constants/appColor";
 import { appInfo } from "../../constants/appInfos";
 import { fontFamilies } from "../../constants/fontFamilies";
-import { currentLocationVar, userVar } from "../../graphqlClient/cache";
-import { AddressModel } from "../../models/AddressModel";
+import { currentLocationVar } from "../../graphqlClient/cache";
 import { EventModel } from "../../models/EventModel";
 import { globalStyles } from "../../styles/gloabalStyles";
 import { RootStackParamList } from "../../types/route";
+import { HandleNotification } from "../../utils/handleNotification";
 
 const HomeScreen = () => {
   const navigation: DrawerNavigationProp<RootStackParamList> = useNavigation();
-  const currentLocation = useReactiveVar(currentLocationVar)
+  const currentLocation = useReactiveVar(currentLocationVar);
   const [events, setEvents] = useState<EventModel[]>([]);
   const [events_nearby, setEvents_nearby] = useState<EventModel[]>([]);
   const { data: data_events_nearby, loading: loading_events_nearby } = useQuery(
@@ -94,42 +93,45 @@ const HomeScreen = () => {
       },
     }
   );
-  const { data: data_events_upcoming, loading: loading_events_upcoming, error } =
-    useQuery(
-      gql`
-        query Events_upcoming {
-          events_upcoming {
-            EventID
-            title
-            description
-            locationTitle
-            locationAddress
-            imageUrl
-            price
-            category
-            date
-            startAt
-            endAt
-            position {
-              lat
-              lng
-            }
-            followers {
-              UserID
-            }
-            users {
-              UserID
-              PhotoUrl
-            }
-            author {
-              UserID
-              Email
-              Username
-            }
+  const {
+    data: data_events_upcoming,
+    loading: loading_events_upcoming,
+    error,
+  } = useQuery(
+    gql`
+      query Events_upcoming {
+        events_upcoming {
+          EventID
+          title
+          description
+          locationTitle
+          locationAddress
+          imageUrl
+          price
+          category
+          date
+          startAt
+          endAt
+          position {
+            lat
+            lng
+          }
+          followers {
+            UserID
+          }
+          users {
+            UserID
+            PhotoUrl
+          }
+          author {
+            UserID
+            Email
+            Username
           }
         }
-      `
-    );
+      }
+    `
+  );
 
   useEffect(() => {
     const reverseGeoCode = async ({
@@ -223,7 +225,14 @@ const HomeScreen = () => {
                 />
               )}
             </View>
-            <CircleComponent color="#524ce0" size={36}>
+            <CircleComponent
+              color="#524ce0"
+              size={36}
+              onPress={async () => {
+                await HandleNotification.sendPushNotification('ExponentPushToken[aItaukCHenOmipmx8F7orA]');
+                // await HandleNotification.schedulePushNotification();
+              }}
+            >
               <View>
                 <Notification size={18} color={appColor.white} />
                 <View
