@@ -8,8 +8,8 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
-evenhubfull-9b9bd-firebase-adminsdk-d0rql-68015d4586.json
-google-services.json
+evenhubfull-9b9bd-firebase-adminsdk-d0rql-68015d4586.json/
+google-services.json/
 
 # Native
 *.orig.*

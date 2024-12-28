@@ -35,6 +35,10 @@ export class User {
   @Field({ nullable: true })
   isChangePassword: number;
 
+  @Column({ nullable: true })
+  @Field({ nullable: true })
+  fcmTokens: [String];
+
   // relation
   // one-to-many
   @OneToMany(() => Event, (event) => event.author)
