@@ -35,4 +35,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-evenhubfull-9b9bd-firebase-adminsdk-d0rql-68015d4586.json/
+evenhubfull-9b9bd-firebase-adminsdk-d0rql-68015d4586.json
+google-services.json
